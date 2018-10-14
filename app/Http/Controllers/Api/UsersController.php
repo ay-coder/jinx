@@ -269,6 +269,8 @@ class UsersController extends BaseApiController
             'profile_pic'   => 'default.png'
         ]);
 
+
+
         if($request->file('profile_pic'))
         {
             $imageName  = rand(11111, 99999) . '_user.' . $request->file('profile_pic')->getClientOriginalExtension();
