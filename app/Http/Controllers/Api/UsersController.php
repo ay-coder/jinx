@@ -218,7 +218,7 @@ class UsersController extends BaseApiController
         {
             Auth::loginUsingId($user->id, true);
 
-            if($request->get('device_token') && $request->get('device_type'))
+            if($request->get('device_token'))
             {
                 $user = Auth::user();
                 $user->device_type  = $request->get('device_type');
