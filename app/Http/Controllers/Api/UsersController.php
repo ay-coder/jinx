@@ -160,8 +160,17 @@ class UsersController extends BaseApiController
             'signup_by'   => 1,
             'profile_pic' => 'default.png'
         ]);
-        
 
+        if($request->file('profile_pic'))
+        {
+            $imageName  = rand(11111, 99999) . '_user.' . $request->file('profile_pic')->getClientOriginalExtension();
+            if(strlen($request->file('profile_pic')->getClientOriginalExtension()) > 0)
+            {
+                $request->file('profile_pic')->move(base_path() . '/public/uploads/user/', $imageName);
+                $input = array_merge($input, ['profile_pic' => $imageName]);
+            }
+        }
+        
         $user = $repository->createSocialUserStub($input);
         if($user)
         {
