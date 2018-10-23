@@ -24,6 +24,7 @@ use App\Library\Push\PushNotification;
 use App\Models\Categories\Categories;
 use URL;
 use App\Models\Templates\Templates;
+use App\Models\Images\Images;
 
 class UsersController extends BaseApiController
 {
@@ -637,6 +638,31 @@ class UsersController extends BaseApiController
             }
         }
 
+        if($request->file('images'))
+        {
+            $files      = $request->file('images');
+            $imageData  = [];
+
+            foreach($files as $file)
+            {
+                $imageName  = rand(11111, 99999) . '_user.' . $file->getClientOriginalExtension();
+                if(strlen($file->getClientOriginalExtension()) > 0)
+                {
+                    $file->move(base_path() . '/public/uploads/user/', $imageName);
+                    $imageData[] = [
+                        'user_id'   => $userInfo['userId'],
+                        'image'     => $imageName
+                    ];
+                }  
+
+                if(count($imageData))
+                {
+                    Images::insert($imageData);
+                    unset($input['images']);
+                }
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
         ]);
@@ -658,7 +684,7 @@ class UsersController extends BaseApiController
         {
             $userObj = new User;
 
-            $user = $userObj->find($userInfo['userId']);
+            $user = $userObj->with('user_images')->find($userInfo['userId']);
 
             if($user)
             {

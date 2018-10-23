@@ -11,6 +11,7 @@ use App\Models\Notifications\Notifications;
 use App\Models\Followers\Followers;
 use App\Models\ReportFeeds\ReportFeeds;
 use App\Models\FeedTagUsers\FeedTagUsers;
+use App\Models\Images\Images;
 
 /**
  * Class UserRelationship.
@@ -165,5 +166,15 @@ trait UserRelationship
     public function user_tag_feeds()
     {
         return $this->hasMany(FeedTagUsers::class, 'user_id');
+    }
+
+    /**
+     * User Tag Feeds
+     * 
+     * @return relation
+     */
+    public function user_images()
+    {
+        return $this->hasMany(Images::class, 'user_id');
     }
 }

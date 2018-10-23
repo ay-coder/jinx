@@ -38,7 +38,20 @@ class UserTransformer extends Transformer
     
     public function userInfo($data)
     {
-        $data = (object) $data;
+        $data       = (object) $data;
+        $images     = (object) $data->user_images;
+        $userImages = [];
+
+        if(isset($images))
+        {
+            foreach($images as $image)   
+            {
+                $userImages[] = [
+                    'image_id'  => $image->id,
+                    'image'     =>  URL::to('/').'/uploads/user/'. $image->image
+                ];
+            }
+        }
         
         return [
             'user_id'       => $data->id,
@@ -46,7 +59,7 @@ class UserTransformer extends Transformer
             'username'      => $data->username,
             'token'         => isset($data->token) ? $this->nulltoBlank($data->token) : '',
             'device_token'  => $data->device_token,
-            'device_type'   =>   $data->device_type,
+            'device_type'   => $this->nulltoBlank($data->device_type),
             'name'          => $this->nulltoBlank($data->name),
             'email'         => $this->nulltoBlank($data->email),
             'bio'           => $this->nulltoBlank($data->bio),
@@ -57,6 +70,7 @@ class UserTransformer extends Transformer
             'address'       => $this->nulltoBlank($data->address),
             'city'          => $this->nulltoBlank($data->city),
             'zip'           => $this->nulltoBlank($data->zip),
+            'images'        => $userImages
         ];
     }
 
