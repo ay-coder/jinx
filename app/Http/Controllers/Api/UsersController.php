@@ -239,7 +239,7 @@ class UsersController extends BaseApiController
             'error'     => 'Invalid Credentials',
             'message'   => 'No User Found for given details',
             'status'    => false,
-            ], 401);
+            ], 400);
     }
 
 
@@ -257,7 +257,8 @@ class UsersController extends BaseApiController
             'rateus_url'            => route('frontend.privacy-policy'),
             'privacy_policy_url'    => route('frontend.privacy-policy'),
             'about_us_url'          => route('frontend.privacy-policy'),
-            'terms_conditions_url'  => route('frontend.privacy-policy')
+            'terms_conditions_url'  => route('frontend.privacy-policy'),
+            'help_support'          => route('frontend.privacy-policy')
         ];
 
         return $this->successResponse($successResponse);
@@ -876,5 +877,56 @@ class UsersController extends BaseApiController
         }
 
         return $this->successResponse($response);                
+    }
+
+    /**
+     * Get Users
+     * 
+     * @param Request $request
+     * @return return
+     */
+    public function getUsers(Request $request)
+    {
+        $userInfo   = $this->getAuthenticatedUser();
+        $users      = User::with('user_images')->where('id', '!=', $userInfo->id)->get();
+        
+        $responseData = $this->userTransformer->showUsersTransform($users);
+
+        return $this->successResponse($responseData);
+    }
+
+    public function checkUser(Request $request)
+    {
+        if($request->has('social_token'))
+        {
+            $user = User::where([
+                'social_token'=> $request->get('social_token')
+            ])->first();
+
+            if(isset($user) && $user->id)
+            {
+                Auth::loginUsingId($user->id, true);
+
+                if($request->get('device_token'))
+                {
+                    $user = Auth::user();
+                    $user->device_token = $request->get('device_token');
+                    $user->save();
+                }
+
+                $user       = Auth::user()->toArray();
+                $token      = JWTAuth::fromUser(Auth::user());
+                $userData   = array_merge($user, ['token' => $token]);
+                $responseData = $this->userTransformer->transform((object)$userData);
+
+                return $this->successResponse($responseData);
+            }
+        }   
+        
+        return response()->json([
+            'error'     => 'Invalid Credentials',
+            'message'   => 'No User Found for given details',
+            'status'    => false,
+            ], 400);
     }
 }

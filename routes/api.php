@@ -24,6 +24,8 @@ Route::group(['namespace' => 'Api',], function ()
 
     Route::post('social-register', 'UsersController@socialCreate')->name('api.social-register');
 
+    Route::post('check-user', 'UsersController@checkUser')->name('api.check-user');
+
     Route::post('social-login', 'UsersController@socialLogin')->name('api.login');
 
     Route::post('validate-user', 'UsersController@validateUser')->name('api.validate-user');
@@ -50,6 +52,9 @@ Route::group(['namespace' => 'Api', 'middleware' => 'jwt.customauth'], function 
     Route::post('update-user-profile', 'UsersController@updageUserProfile')->name('api.update-user-profile');
 
     Route::post('change-device_token', 'UsersController@changeDeviceToken')->name('api.change-device-token');
+
+    Route::post('get-users', 'UsersController@getUsers')->name('api.get-users');
+
 
 
     Route::post('change-password', 'UsersController@changePassword')->name('api.change-password');

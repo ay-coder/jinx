@@ -148,4 +148,46 @@ class UserTransformer extends Transformer
             'bio'           => $this->nulltoBlank($data->bio),
         ]; 
     }
+
+    public function showUsersTransform($users)
+    {
+        $response = [];
+
+        if(isset($users))
+        {
+            foreach($users as $user)
+            {
+                $images = [];
+
+                if(isset($user->user_images))                
+                {
+                    foreach($user->user_images as $userImage)
+                    {
+                        $images[] = [
+                            'image_id'  => $userImage->id,
+                            'image'     => URL::to('/').'/uploads/user/'.$userImage->image
+                        ];
+                    }
+                }
+
+                $response[] = [
+                    'user_id'       => (int) $user->id,
+                    'name'          => $this->nulltoBlank($user->name),
+                    'email'         => $this->nulltoBlank($user->email),
+                    'phone'         => $this->nulltoBlank($user->phone),
+                    'profile_pic'   => isset($user->profile_pic) ? URL::to('/').'/uploads/user/' . $user->profile_pic : '',
+                    'bio'           => $this->nulltoBlank($user->bio),
+                    'gender'        => $this->nulltoBlank($user->gender),
+                    'profession'    => $this->nulltoBlank($user->profession),
+                    'education'     => $this->nulltoBlank($user->education),
+                    'birthdate'     => $this->nulltoBlank($user->birthdate),
+                    'distance'      => 10,
+                    'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
+                    'userImages'    => $images
+                ];
+            }
+        }
+
+        return $response;
+    }
 }
