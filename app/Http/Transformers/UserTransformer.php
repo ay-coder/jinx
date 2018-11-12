@@ -162,7 +162,7 @@ class UserTransformer extends Transformer
             {
                 $images = [];
 
-                $userImages = [
+                $images = [
                     'image_id'  => 0,
                     'image'     => URL::to('/').'/uploads/user/' . $user->profile_pic
                 ];
