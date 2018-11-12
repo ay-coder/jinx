@@ -40,7 +40,10 @@ class UserTransformer extends Transformer
     {
         $data       = (object) $data;
         $images     = (object) $data->user_images;
-        $userImages = [];
+        $userImages = [
+            'image_id'  => 0,
+            'image'     => URL::to('/').'/uploads/user/' . $data->profile_pic
+        ];
 
         if(isset($images))
         {
@@ -158,6 +161,11 @@ class UserTransformer extends Transformer
             foreach($users as $user)
             {
                 $images = [];
+
+                $userImages = [
+                    'image_id'  => 0,
+                    'image'     => URL::to('/').'/uploads/user/' . $user->profile_pic
+                ];
 
                 if(isset($user->user_images))                
                 {
