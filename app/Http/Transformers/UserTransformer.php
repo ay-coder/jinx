@@ -160,9 +160,7 @@ class UserTransformer extends Transformer
         {
             foreach($users as $user)
             {
-                $images = [];
-
-                $images = [
+                $images[] = [
                     'image_id'  => 0,
                     'image'     => URL::to('/').'/uploads/user/' . $user->profile_pic
                 ];
