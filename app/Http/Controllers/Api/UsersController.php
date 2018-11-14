@@ -927,6 +927,6 @@ class UsersController extends BaseApiController
             'error'     => 'Invalid Credentials',
             'message'   => 'No User Found for given details',
             'status'    => false,
-            ], 400);
+            ], 200);
     }
 }
