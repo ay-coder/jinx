@@ -103,7 +103,7 @@ class UsersController extends BaseApiController
             return $this->successResponse($successResponse);
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'User Not Found !'
         ], 'User Not Found !');
     }
@@ -183,7 +183,7 @@ class UsersController extends BaseApiController
             $responseData   = $this->userTransformer->transform((object)$userData);
             return $this->successResponse($responseData);
         }
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
             ], 'Something went wrong !');
     }
@@ -315,7 +315,7 @@ class UsersController extends BaseApiController
 
             if(isset($isExist->id) && count($isExist))
             {
-               return $this->setStatusCode(400)->failureResponse([
+               return $this->setStatusCode(200)->failureResponse([
                 'reason' => 'Email Already Exists !'
                 ], 'Email Already Exists !'); 
             }
@@ -347,7 +347,7 @@ class UsersController extends BaseApiController
             return $this->successResponse($responseData);
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
             ], 'Something went wrong !');
     }
@@ -416,12 +416,12 @@ class UsersController extends BaseApiController
                 return $this->successResponse($successResponse, 'Reset Password Mail send successfully.');
             }
 
-            return $this->setStatusCode(400)->failureResponse([
+            return $this->setStatusCode(200)->failureResponse([
                 'error' => 'User not Found !'
             ], 'User not Found !');
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');
     }
@@ -451,12 +451,12 @@ class UsersController extends BaseApiController
                 return $this->successResponse($responseData);
             }
 
-            return $this->setStatusCode(400)->failureResponse([
+            return $this->setStatusCode(200)->failureResponse([
                 'error' => 'User not Found !'
             ], 'Something went wrong !');
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');     
     }
@@ -521,12 +521,12 @@ class UsersController extends BaseApiController
                 return $this->successResponse($responseData);
             }
 
-            return $this->setStatusCode(400)->failureResponse([
+            return $this->setStatusCode(200)->failureResponse([
                 'error' => 'User not Found !'
             ], 'Something went wrong !');
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');     
     }*/
@@ -568,7 +568,7 @@ class UsersController extends BaseApiController
             }
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');
     }
@@ -604,7 +604,7 @@ class UsersController extends BaseApiController
             return $this->successResponse($successResponse, 'Password Updated successfully.');
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');
     }
@@ -704,12 +704,12 @@ class UsersController extends BaseApiController
                 return $this->successResponse($responseData);
             }
 
-            return $this->setStatusCode(400)->failureResponse([
+            return $this->setStatusCode(200)->failureResponse([
                 'error' => 'User not Found !'
             ], 'Something went wrong !');
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');     
     }
@@ -755,7 +755,7 @@ class UsersController extends BaseApiController
 
             if(isset($user) && isset($user->id))
             {
-                return $this->setStatusCode(400)->failureResponse([
+                return $this->setStatusCode(200)->failureResponse([
                     'reason' => 'User exist with Username or Phone Number!'
                 ], 'User exist with Username or Phone Number');
             }
@@ -770,7 +770,7 @@ class UsersController extends BaseApiController
 
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Input'
         ], 'Invalid Input');
     }
@@ -824,7 +824,7 @@ class UsersController extends BaseApiController
             }
         }
 
-        return $this->setStatusCode(400)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Input !'
         ], 'Invalid Input!');
     }
