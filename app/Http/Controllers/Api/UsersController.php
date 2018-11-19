@@ -902,9 +902,17 @@ class UsersController extends BaseApiController
     public function getRosterUsers(Request $request)
     {
         $userInfo       = $this->getAuthenticatedUser();
-        $rosterUserIds  = UserInterests::where('interested_user_id', $userInfo->id)->pluck('user_id')->toArray();
+        $myInterestIds  = UserInterests::where('interested_user_id', $userInfo->id)->pluck('user_id')->toArray();
 
-        $users          = User::with('user_images')->whereIn('id', $rosterUserIds)->get();
+        $otherInterestIds = UserInterests::where('user_id', $userInfo->id)->pluck('interested_user_id')->toArray();
+
+        $interestedIds = array_merge($myInterestIds, $otherInterestIds);
+
+        $interestedIds = array_unique($interestedIds);
+
+        /*$rosterUserIds  = UserInterests::where('interested_user_id', $userInfo->id)->orWhere('user_id', $userInfo->id)->pluck('user_id')->toArray();*/
+
+        $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->whereIn('id', $interestedIds)->get();
         
         $responseData = $this->userTransformer->showUsersTransform($users);
 
@@ -920,7 +928,16 @@ class UsersController extends BaseApiController
     public function getUsers(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
-        $users      = User::with('user_images')->where('id', '!=', $userInfo->id)->get();
+        $settings   = access()->getUserSettings($userInfo->id);
+        $condition  = [];
+
+        if($settings->interested != 'Everyone')
+        {
+            $condition  = [
+                'gender' => $settings->interested
+            ];
+        }
+        $users      = User::with('user_images')->where($condition)->where('id', '!=', $userInfo->id)->get();
         
         $responseData = $this->userTransformer->showUsersTransform($users);
 

@@ -7,6 +7,7 @@ use App\Models\ReadPost\ReadPost;
 use App\Models\Connections\Connections;
 use App\Models\FeedNotifications\FeedNotifications;
 use App\Library\Push\PushNotification;
+use App\Models\Settings\Settings;
 
 /**
  * Class Access.
@@ -352,5 +353,21 @@ class Access
 
         return 1;
 
+    }
+
+    /**
+     * Get User Settings
+     * 
+     * @param int $userId
+     * @return object
+     */
+    public function getUserSettings($userId = null)
+    {
+        if($userId)
+        {
+            return Settings::where('user_id', $userId)->first();
+        }
+
+        return false;
     }
 }
