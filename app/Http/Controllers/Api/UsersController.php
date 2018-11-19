@@ -24,7 +24,9 @@ use App\Library\Push\PushNotification;
 use App\Models\Categories\Categories;
 use URL;
 use App\Models\Templates\Templates;
+use App\Models\Settings\Settings;
 use App\Models\Images\Images;
+use App\Models\UserInterests\UserInterests;
 
 class UsersController extends BaseApiController
 {
@@ -175,6 +177,18 @@ class UsersController extends BaseApiController
         $user = $repository->createSocialUserStub($input);
         if($user)
         {
+            $from = new \DateTime($input['birthdate']);
+            $to   = new \DateTime('today');
+            $age  = $from->diff($to)->y;
+
+            Settings::create([
+                'user_id'           => $user->id,
+                'ghost_mode'        => 0,
+                'interested'        => isset($input['gender']) && $input['gender'] == 'Female' ? 'Male' : 'Female',
+                'age_start_range'   => $age - 5,
+                'age_end_range'     => $age + 5,
+                'distance'          => 5
+            ]);
             Auth::loginUsingId($user->id, true);
 
             $user           = Auth::user()->toArray();
@@ -877,6 +891,24 @@ class UsersController extends BaseApiController
         }
 
         return $this->successResponse($response);                
+    }
+
+    /**
+     * Get Roster Users
+     * 
+     * @param Request $request
+     * @return return
+     */
+    public function getRosterUsers(Request $request)
+    {
+        $userInfo       = $this->getAuthenticatedUser();
+        $rosterUserIds  = UserInterests::where('interested_user_id', $userInfo->id)->pluck('user_id')->toArray();
+
+        $users          = User::with('user_images')->whereIn('id', $rosterUserIds)->get();
+        
+        $responseData = $this->userTransformer->showUsersTransform($users);
+
+        return $this->successResponse($responseData);
     }
 
     /**
