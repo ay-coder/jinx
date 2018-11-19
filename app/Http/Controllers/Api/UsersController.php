@@ -912,7 +912,7 @@ class UsersController extends BaseApiController
 
         /*$rosterUserIds  = UserInterests::where('interested_user_id', $userInfo->id)->orWhere('user_id', $userInfo->id)->pluck('user_id')->toArray();*/
 
-        $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->whereIn('id', $interestedIds)->get();
+        $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->where('id', '!=', 1)->whereIn('id', $interestedIds)->get();
         
         $responseData = $this->userTransformer->showUsersTransform($users);
 
@@ -937,7 +937,7 @@ class UsersController extends BaseApiController
                 'gender' => $settings->interested
             ];
         }
-        $users      = User::with('user_images')->where($condition)->where('id', '!=', $userInfo->id)->get();
+        $users      = User::with('user_images')->where($condition)->where('id', '!=', 1)->where('id', '!=', $userInfo->id)->get();
         
         $responseData = $this->userTransformer->showUsersTransform($users);
 
