@@ -938,6 +938,20 @@ class UsersController extends BaseApiController
             ];
         }
         $users      = User::with('user_images')->where($condition)->where('id', '!=', 1)->where('id', '!=', $userInfo->id)->get();
+
+        $users  = $users->filter(function($item) use($settings)
+        {
+                $from = new \DateTime($item->birthdate);
+                $to   = new \DateTime('today');
+                $age  = $from->diff($to)->y;
+
+                if($settings->age_start_range >= $age && $age <=  $settings->age_end_range) 
+                {
+                    return $item;
+                }
+
+                return null;
+        });
         
         $responseData = $this->userTransformer->showUsersTransform($users);
 
