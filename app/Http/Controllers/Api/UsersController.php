@@ -931,9 +931,6 @@ class UsersController extends BaseApiController
         $userInfo   = $this->getAuthenticatedUser();
         $settings   = access()->getUserSettings($userInfo->id);
         $blockUserIds = access()->getMyBlockedUserIds($userInfo->id);
-
-        //dd();
-
         $condition  = [];
 
         if($settings->interested != 'Everyone')
@@ -950,7 +947,7 @@ class UsersController extends BaseApiController
                 $to   = new \DateTime('today');
                 $age  = $from->diff($to)->y;
 
-                if($settings->age_start_range >= $age && $age <=  $settings->age_end_range) 
+                if($settings->age_start_range <= $age && $age >=  $settings->age_end_range) 
                 {
                     return $item;
                 }
