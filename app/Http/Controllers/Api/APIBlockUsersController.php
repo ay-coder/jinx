@@ -192,9 +192,9 @@ class APIBlockUsersController extends BaseApiController
             {
                 $isExists->delete();
 
-                return $this->setStatusCode(200)->failureResponse([
-                    'reason' => 'User UnBlocked Successfully'
-                    ], 'User UnBlocked Successfully');
+                return $this->successResponse([
+                    'success' => 'User UnBlocked Successfully'
+                ], 'User UnBlocked Successfully');
             }
         }
 
