@@ -961,6 +961,32 @@ class UsersController extends BaseApiController
     }
 
     /**
+     * Get User Profile
+     * 
+     * @param Request $request
+     * @return return
+     */
+    public function getSingleUserProfile(Request $request)
+    {
+        if($request->has('user_id'))
+        {
+            $user = User::with('user_images')->where('id', $request->get('user_id'))->first();
+            $responseData = $this->userTransformer->showSingleUserTransform($user);
+
+            return $this->successResponse($responseData);
+        }
+       
+        return response()->json([
+        'error'     => 'No User Found for given details',
+        'message'   => 'No User Found for given details',
+        'status'    => false,
+        ], 200);
+
+    }
+
+    
+
+    /**
      * Get Users
      * 
      * @param Request $request

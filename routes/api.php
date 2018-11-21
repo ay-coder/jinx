@@ -57,6 +57,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'jwt.customauth'], function 
 
     Route::post('get-blocked-users', 'UsersController@getBlockedUsers')->name('api.get-blocked-users');
 
+     Route::post('get-user-profile', 'UsersController@getSingleUserProfile')->name('api.get-user-profile');
+
 
     Route::post('get-roster-users', 'UsersController@getRosterUsers')->name('api.get-users');
 
