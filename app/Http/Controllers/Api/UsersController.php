@@ -27,6 +27,7 @@ use App\Models\Templates\Templates;
 use App\Models\Settings\Settings;
 use App\Models\Images\Images;
 use App\Models\UserInterests\UserInterests;
+use App\Models\BlockUsers\BlockUsers;
 
 class UsersController extends BaseApiController
 {
@@ -929,6 +930,10 @@ class UsersController extends BaseApiController
     {
         $userInfo   = $this->getAuthenticatedUser();
         $settings   = access()->getUserSettings($userInfo->id);
+        $blockUserIds = access()->getMyBlockedUserIds($userInfo->id);
+
+        //dd();
+
         $condition  = [];
 
         if($settings->interested != 'Everyone')
@@ -937,7 +942,7 @@ class UsersController extends BaseApiController
                 'gender' => $settings->interested
             ];
         }
-        $users      = User::with('user_images')->where($condition)->where('id', '!=', 1)->where('id', '!=', $userInfo->id)->get();
+        $users      = User::with('user_images')->whereNotIn('id', $blockUserIds)->where($condition)->where('id', '!=', 1)->where('id', '!=', $userInfo->id)->get();
 
         $users  = $users->filter(function($item) use($settings)
         {
@@ -953,6 +958,24 @@ class UsersController extends BaseApiController
                 return null;
         });
         
+        $responseData = $this->userTransformer->showUsersTransform($users);
+
+        return $this->successResponse($responseData);
+    }
+
+    /**
+     * Get Users
+     * 
+     * @param Request $request
+     * @return return
+     */
+    public function getBlockedUsers(Request $request)
+    {
+        $userInfo       = $this->getAuthenticatedUser();
+        $blockUserIds   = BlockUsers::where('user_id', $userInfo->id)->pluck('block_user_id')->toArray();
+
+        $users      = User::with('user_images')->where('id', '!=', 1)->whereIn('id', $blockUserIds)->get();
+
         $responseData = $this->userTransformer->showUsersTransform($users);
 
         return $this->successResponse($responseData);

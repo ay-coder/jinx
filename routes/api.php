@@ -54,6 +54,10 @@ Route::group(['namespace' => 'Api', 'middleware' => 'jwt.customauth'], function 
     Route::post('change-device_token', 'UsersController@changeDeviceToken')->name('api.change-device-token');
 
     Route::post('get-users', 'UsersController@getUsers')->name('api.get-users');
+
+    Route::post('get-blocked-users', 'UsersController@getBlockedUsers')->name('api.get-blocked-users');
+
+
     Route::post('get-roster-users', 'UsersController@getRosterUsers')->name('api.get-users');
 
 

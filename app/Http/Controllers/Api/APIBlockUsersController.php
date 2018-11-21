@@ -2,19 +2,18 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Transformers\UserInterestsTransformer;
+use App\Http\Transformers\BlockUsersTransformer;
 use App\Http\Controllers\Api\BaseApiController;
-use App\Repositories\UserInterests\EloquentUserInterestsRepository;
-use App\Models\UserInterests\UserInterests;
+use App\Repositories\BlockUsers\EloquentBlockUsersRepository;
 
-class APIUserInterestsController extends BaseApiController
+class APIBlockUsersController extends BaseApiController
 {
     /**
-     * UserInterests Transformer
+     * BlockUsers Transformer
      *
      * @var Object
      */
-    protected $userinterestsTransformer;
+    protected $blockusersTransformer;
 
     /**
      * Repository
@@ -28,7 +27,7 @@ class APIUserInterestsController extends BaseApiController
      *
      * @var string
      */
-    protected $primaryKey = 'userinterestsId';
+    protected $primaryKey = 'blockusersId';
 
     /**
      * __construct
@@ -36,12 +35,12 @@ class APIUserInterestsController extends BaseApiController
      */
     public function __construct()
     {
-        $this->repository                       = new EloquentUserInterestsRepository();
-        $this->userinterestsTransformer = new UserInterestsTransformer();
+        $this->repository                       = new EloquentBlockUsersRepository();
+        $this->blockusersTransformer = new BlockUsersTransformer();
     }
 
     /**
-     * List of All UserInterests
+     * List of All BlockUsers
      *
      * @param Request $request
      * @return json
@@ -55,14 +54,14 @@ class APIUserInterestsController extends BaseApiController
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->userinterestsTransformer->transformCollection($items);
+            $itemsOutput = $this->blockusersTransformer->transformCollection($items);
 
             return $this->successResponse($itemsOutput);
         }
 
         return $this->setStatusCode(400)->failureResponse([
-            'message' => 'Unable to find UserInterests!'
-            ], 'No UserInterests Found !');
+            'message' => 'Unable to find BlockUsers!'
+            ], 'No BlockUsers Found !');
     }
 
     /**
@@ -73,43 +72,40 @@ class APIUserInterestsController extends BaseApiController
      */
     public function create(Request $request)
     {
-        if($request->has('interested_user_id'))
+        if($request->has('block_user_id'))
         {
             $userInfo   = $this->getAuthenticatedUser();
-            $isExists   = UserInterests::where([
-                'user_id' => $userInfo->id,
-                'interested_user_id' => $request->get('interested_user_id')
+            $isExists   = $this->repository->model->where([
+                'user_id'       => $userInfo->id,
+                'block_user_id' => $request->get('block_user_id')
+            ])->orWhere([
+                'user_id'       => $request->get('block_user_id'),
+                'block_user_id' => $userInfo->id
             ])->first();
 
             if(isset($isExists))
             {
-                return $this->setStatusCode(400)->failureResponse([
-                    'reason' => 'Already shown Interest'
-                    ], 'Already shown Interest');
+                return $this->setStatusCode(200)->failureResponse([
+                    'reason' => 'User Already in Block List'
+                    ], 'User Already in Block List');
             }
 
-            $data       = [
-                'user_id'               => $userInfo->id,
-                'interested_user_id'    => $request->get('interested_user_id'),
-                'description'           => 'Show Interest at ' . date('Y-m-d H:i:s')
-            ];
+            $status = $this->repository->model->create([
+                'user_id'       => $userInfo->id,
+                'block_user_id' => $request->get('block_user_id')
+            ]);
 
-            $model = $this->repository->create($data);
-
-            if($model)
+            if($status)
             {
-
-                $responseData = [
-                    'message' => 'User Interest Created Successfully'
-                ];
-
-                return $this->successResponse($responseData);
+                return $this->successResponse([
+                    'success' => 'User Blocked Successfully'
+                ], 'User Blocked Successfully');
             }
         }
 
-        return $this->setStatusCode(400)->failureResponse([
-            'reason' => 'Invalid Inputs'
-            ], 'Something went wrong !');
+        return $this->setStatusCode(200)->failureResponse([
+            'reason' => 'No user found'
+            ], 'No user found');
     }
 
     /**
@@ -128,7 +124,7 @@ class APIUserInterestsController extends BaseApiController
 
             if($itemData)
             {
-                $responseData = $this->userinterestsTransformer->transform($itemData);
+                $responseData = $this->blockusersTransformer->transform($itemData);
 
                 return $this->successResponse($responseData, 'View Item');
             }
@@ -156,9 +152,9 @@ class APIUserInterestsController extends BaseApiController
             if($status)
             {
                 $itemData       = $this->repository->getById($itemId);
-                $responseData   = $this->userinterestsTransformer->transform($itemData);
+                $responseData   = $this->blockusersTransformer->transform($itemData);
 
-                return $this->successResponse($responseData, 'UserInterests is Edited Successfully');
+                return $this->successResponse($responseData, 'BlockUsers is Edited Successfully');
             }
         }
 
@@ -175,31 +171,26 @@ class APIUserInterestsController extends BaseApiController
      */
     public function delete(Request $request)
     {
-        if($request->has('user_id'))
+        if($request->has('block_user_id'))
         {
             $userInfo   = $this->getAuthenticatedUser();
-            $isExists   = UserInterests::where([
-                'user_id'            => $userInfo->id,
-                'interested_user_id' => $request->get('user_id')
-            ])
-            ->orWhere([
-                'user_id'            => $request->get('user_id'),
-                'interested_user_id' => $userInfo->id
-            ])
-            ->first();
+            $isExists   = $this->repository->model->where([
+                'user_id'       => $userInfo->id,
+                'block_user_id' => $request->get('block_user_id')
+            ])->first();
 
             if(isset($isExists))
             {
-                $isExists->delete();   
+                $isExists->delete();
 
-                return $this->successResponse([
-                    'success' => 'Decline Chat Request Successfully'
-                ], 'Decline Chat Request Successfully');
+                return $this->setStatusCode(200)->failureResponse([
+                    'reason' => 'User UnBlocked Successfully'
+                    ], 'User UnBlocked Successfully');
             }
         }
 
         return $this->setStatusCode(404)->failureResponse([
-            'reason' => 'No Chat Request Found !'
-        ], 'No Chat Request Found !');
+            'reason' => 'No Blocked User Found'
+        ], 'No Blocked User Found');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Connections\Connections;
 use App\Models\FeedNotifications\FeedNotifications;
 use App\Library\Push\PushNotification;
 use App\Models\Settings\Settings;
+use App\Models\BlockUsers\BlockUsers;
 
 /**
  * Class Access.
@@ -370,4 +371,22 @@ class Access
 
         return false;
     }
+
+    /**
+     * Get User Settings
+     * 
+     * @param int $userId
+     * @return object
+     */
+    public function getMyBlockedUserIds($userId = null)
+    {
+        if($userId)
+        {
+            return BlockUsers::where('user_id', $userId)->pluck('block_user_id')->toArray();
+        }
+
+        return false;
+    }
 }
+
+
