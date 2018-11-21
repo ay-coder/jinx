@@ -947,7 +947,7 @@ class UsersController extends BaseApiController
                 $to   = new \DateTime('today');
                 $age  = $from->diff($to)->y;
 
-                if($settings->age_start_range <= $age && $age >=  $settings->age_end_range) 
+                if($age >= $settings->age_start_range && $age <= $settings->age_end_range)
                 {
                     return $item;
                 }
