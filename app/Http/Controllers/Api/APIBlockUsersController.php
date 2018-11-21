@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Transformers\BlockUsersTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\BlockUsers\EloquentBlockUsersRepository;
+use App\Models\UserInterests\UserInterests;
 
 class APIBlockUsersController extends BaseApiController
 {
@@ -97,6 +98,14 @@ class APIBlockUsersController extends BaseApiController
 
             if($status)
             {
+                UserInterests::where([
+                    'user_id'               => $userInfo->id,
+                    'interested_user_id'    => $request->get('block_user_id')
+                ])->orWhere([
+                    'user_id'               => $request->get('block_user_id'),
+                    'interested_user_id'    => $userInfo->id
+                ])->delete();
+
                 return $this->successResponse([
                     'success' => 'User Blocked Successfully'
                 ], 'User Blocked Successfully');
