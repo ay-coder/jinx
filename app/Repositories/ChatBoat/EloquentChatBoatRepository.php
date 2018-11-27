@@ -1,31 +1,30 @@
-<?php namespace App\Repositories\Messages;
+<?php namespace App\Repositories\ChatBoat;
 
 /**
- * Class EloquentMessagesRepository
+ * Class EloquentChatBoatRepository
  *
  * @author Anuj Jaha ( er.anujjaha@gmail.com)
  */
 
-use App\Models\Messages\Messages;
+use App\Models\ChatBoat\ChatBoat;
 use App\Repositories\DbRepository;
 use App\Exceptions\GeneralException;
-use App\Models\ChatBoat\ChatBoat;
 
-class EloquentMessagesRepository extends DbRepository
+class EloquentChatBoatRepository extends DbRepository
 {
     /**
-     * Messages Model
+     * ChatBoat Model
      *
      * @var Object
      */
     public $model;
 
     /**
-     * Messages Title
+     * ChatBoat Title
      *
      * @var string
      */
-    public $moduleTitle = 'Messages';
+    public $moduleTitle = 'ChatBoat';
 
     /**
      * Table Headers
@@ -36,8 +35,13 @@ class EloquentMessagesRepository extends DbRepository
         'id'        => 'Id',
 'user_id'        => 'User_id',
 'other_user_id'        => 'Other_user_id',
-'message'        => 'Message',
-'is_read'        => 'Is_read',
+'question'        => 'Question',
+'user_answer'        => 'User_answer',
+'other_user_answer'        => 'Other_user_answer',
+'accept_user_id'        => 'Accept_user_id',
+'accept_other_user_id'        => 'Accept_other_user_id',
+'user_answer_time'        => 'User_answer_time',
+'other_user_answer_time'        => 'Other_user_answer_time',
 'created_at'        => 'Created_at',
 'updated_at'        => 'Updated_at',
 "actions"         => "Actions"
@@ -67,15 +71,45 @@ class EloquentMessagesRepository extends DbRepository
                 'searchable'    => true,
                 'sortable'      => true
             ],
-		'message' =>   [
-                'data'          => 'message',
-                'name'          => 'message',
+		'question' =>   [
+                'data'          => 'question',
+                'name'          => 'question',
                 'searchable'    => true,
                 'sortable'      => true
             ],
-		'is_read' =>   [
-                'data'          => 'is_read',
-                'name'          => 'is_read',
+		'user_answer' =>   [
+                'data'          => 'user_answer',
+                'name'          => 'user_answer',
+                'searchable'    => true,
+                'sortable'      => true
+            ],
+		'other_user_answer' =>   [
+                'data'          => 'other_user_answer',
+                'name'          => 'other_user_answer',
+                'searchable'    => true,
+                'sortable'      => true
+            ],
+		'accept_user_id' =>   [
+                'data'          => 'accept_user_id',
+                'name'          => 'accept_user_id',
+                'searchable'    => true,
+                'sortable'      => true
+            ],
+		'accept_other_user_id' =>   [
+                'data'          => 'accept_other_user_id',
+                'name'          => 'accept_other_user_id',
+                'searchable'    => true,
+                'sortable'      => true
+            ],
+		'user_answer_time' =>   [
+                'data'          => 'user_answer_time',
+                'name'          => 'user_answer_time',
+                'searchable'    => true,
+                'sortable'      => true
+            ],
+		'other_user_answer_time' =>   [
+                'data'          => 'other_user_answer_time',
+                'name'          => 'other_user_answer_time',
                 'searchable'    => true,
                 'sortable'      => true
             ],
@@ -140,13 +174,13 @@ class EloquentMessagesRepository extends DbRepository
      * @var array
      */
     public $moduleRoutes = [
-        'listRoute'     => 'messages.index',
-        'createRoute'   => 'messages.create',
-        'storeRoute'    => 'messages.store',
-        'editRoute'     => 'messages.edit',
-        'updateRoute'   => 'messages.update',
-        'deleteRoute'   => 'messages.destroy',
-        'dataRoute'     => 'messages.get-list-data'
+        'listRoute'     => 'chatboat.index',
+        'createRoute'   => 'chatboat.create',
+        'storeRoute'    => 'chatboat.store',
+        'editRoute'     => 'chatboat.edit',
+        'updateRoute'   => 'chatboat.update',
+        'deleteRoute'   => 'chatboat.destroy',
+        'dataRoute'     => 'chatboat.get-list-data'
     ];
 
     /**
@@ -155,10 +189,10 @@ class EloquentMessagesRepository extends DbRepository
      * @var array
      */
     public $moduleViews = [
-        'listView'      => 'messages.index',
-        'createView'    => 'messages.create',
-        'editView'      => 'messages.edit',
-        'deleteView'    => 'messages.destroy',
+        'listView'      => 'chatboat.index',
+        'createView'    => 'chatboat.create',
+        'editView'      => 'chatboat.edit',
+        'deleteView'    => 'chatboat.destroy',
     ];
 
     /**
@@ -167,22 +201,30 @@ class EloquentMessagesRepository extends DbRepository
      */
     public function __construct()
     {
-        $this->model = new Messages;
+        $this->model = new ChatBoat;
     }
 
     /**
-     * Create Messages
+     * Create ChatBoat
      *
      * @param array $input
      * @return mixed
      */
     public function create($input)
     {
-        
+        $input = $this->prepareInputData($input, true);
+        $model = $this->model->create($input);
+
+        if($model)
+        {
+            return $model;
+        }
+
+        return false;
     }
 
     /**
-     * Update Messages
+     * Update ChatBoat
      *
      * @param int $id
      * @param array $input
@@ -203,7 +245,7 @@ class EloquentMessagesRepository extends DbRepository
     }
 
     /**
-     * Destroy Messages
+     * Destroy ChatBoat
      *
      * @param int $id
      * @return mixed
@@ -335,90 +377,4 @@ class EloquentMessagesRepository extends DbRepository
 
         return json_encode($this->setTableStructure($clientColumns));
     }
-
-
-    
-    /**
-     * Get All User Messages
-     * 
-     * @var int
-     */
-    public function getAllUserMessages($userId = null)
-    {
-        if($userId)
-        {
-            $chatBoat = ChatBoat::where([
-                'is_ready' => 1
-            ])->where(function($q) use($userId)
-            {
-                $q->where('accept_user_id', $userId)
-                ->orWhere('accept_other_user_id', $userId);
-            })
-            ->get();
-
-            $senderIds      = $chatBoat->pluck('user_id')->toArray();
-            $receiverIds    = $chatBoat->pluck('other_user_id')->toArray();
-            $allowedUserIds = array_unique(array_merge($senderIds, $receiverIds));
-
-
-            $messages = $this->model->where(function($q) use($allowedUserIds)
-            {
-                $q->whereIn('user_id', $allowedUserIds)->whereIn('other_user_id', $allowedUserIds);
-            })
-            /*whereIn('user_id', $allowedUserIds)
-            ->orWhereIn('other_user_id', $allowedUserIds)*/
-            ->with([
-                'user',
-                'other_user'
-            ])
-            ->orderBy('id', 'desc')
-            ->get();
-
-            $response   = [];
-            $userIds    = [];
-
-            foreach($messages as $message)
-            {
-                if(! in_array($message->other_user_id, $userIds))
-                {
-                    $userIds[]      = $message->other_user_id;
-                    $response[]     = $message;
-                    continue;   
-                }
-            }
-
-            return $response;
-        }
-        
-        return false;
-    }
-
-    /**
-     * Get All
-     *
-     * @param string $orderBy
-     * @param string $sort
-     * @return mixed
-     */
-    public function getAllChat($userId = null, $otherUserId = null)
-    {
-        if($userId && $otherUserId)
-        {
-            return $this->model->where([
-                'user_id'   => $userId,
-                'other_user_id'    => $otherUserId
-            ])->orWhere([
-                'other_user_id'   => $userId,
-                'user_id'    => $otherUserId
-            ])
-            ->with([
-                'user',
-                'other_user'
-            ])
-            ->get();
-        }
-
-        return false;
-    }
-    
 }

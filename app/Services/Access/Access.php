@@ -387,6 +387,32 @@ class Access
 
         return false;
     }
+
+    /**
+     * Get Random Question
+     * 
+     * @return array
+     */
+    public function getRandomQuestion()
+    {
+        $questiions = [
+            [
+                'question_id' => 1,
+                'question'    => 'What is Your Pet Name ?'
+            ],
+            [
+                'question_id' => 2,
+                'question'    => 'What is Your Birth Place ?'
+            ],
+            [
+                'question_id' => 3,
+                'question'    => 'What is Your Favorite Color ?'
+            ],
+        ];
+
+        $randomNumber = rand(0, 2);
+        return $questiions[$randomNumber];
+    }
 }
 
 
