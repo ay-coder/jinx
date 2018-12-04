@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\UserInterests\EloquentUserInterestsRepository;
 use App\Models\UserInterests\UserInterests;
 use App\Models\ChatBoat\ChatBoat;
+use App\Models\Messages\Messages;
 
 class APIUserInterestsController extends BaseApiController
 {
@@ -111,12 +112,18 @@ class APIUserInterestsController extends BaseApiController
 
                 if($userInterest && $otherUserInterest)
                 {
-                    $question = access()->getRandomQuestion();
-                    $chatBoat = ChatBoat::create([
+                    Messages::create([
+                        'user_id'       => $userInfo->id,
+                        'other_user_id' => $request->get('interested_user_id'),
+                        'message'       => "Let's Talk "
+                    ]);
+
+                    //$question = access()->getRandomQuestion();
+                    /* $chatBoat = ChatBoat::create([
                         'user_id'       => $userInfo->id,
                         'other_user_id' => $request->get('interested_user_id'),
                         'question'      => $question['question'],
-                    ]);
+                    ]);*/
                 }
 
                 $responseData = [
