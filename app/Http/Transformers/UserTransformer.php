@@ -9,7 +9,21 @@ class UserTransformer extends Transformer
 {
     public function transform($data) 
     {
-        $postRequestCount  = isset($data->post_requests) ? count($data->post_requests) : 0;
+        $userImages[] = [
+            'image_id'  => 0,
+            'image'     => URL::to('/').'/uploads/user/' . $data->profile_pic
+        ];
+
+        if(isset($images))
+        {
+            foreach($images as $image)   
+            {
+                $userImages[] = [
+                    'image_id'  => $image->id,
+                    'image'     =>  URL::to('/').'/uploads/user/'. $image->image
+                ];
+            }
+        }
         return [
             'user_id'       => $data->id,
             'username'      => $data->username,
@@ -34,6 +48,7 @@ class UserTransformer extends Transformer
             'phone'         => $this->nulltoBlank($data->phone),
             'birthdate'     => $this->nulltoBlank($data->birthdate),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
+            'images'        => $userImages
         ];
     }
     
@@ -41,7 +56,7 @@ class UserTransformer extends Transformer
     {
         $data       = (object) $data;
         $images     = (object) $data->user_images;
-        $userImages = [
+        $userImages[] = [
             'image_id'  => 0,
             'image'     => URL::to('/').'/uploads/user/' . $data->profile_pic
         ];
@@ -56,7 +71,7 @@ class UserTransformer extends Transformer
                 ];
             }
         }
-        
+
         return [
             'user_id'       => $data->id,
             'username'      => $data->username,
@@ -75,6 +90,8 @@ class UserTransformer extends Transformer
             'zip'           => $this->nulltoBlank($data->zip),
             'birthdate'     => $this->nulltoBlank($data->birthdate),
             'gender'        => $this->nulltoBlank($data->gender),
+            'spotify_token' => $this->nulltoBlank($data->spotify_token),
+            'insta_token'   => $this->nulltoBlank($data->insta_token),
             'images'        => $userImages
         ];
     }

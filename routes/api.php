@@ -62,7 +62,9 @@ Route::group(['namespace' => 'Api', 'middleware' => 'jwt.customauth'], function 
 
     Route::post('get-roster-users', 'UsersController@getRosterUsers')->name('api.get-users');
 
+    Route::post('get-user-social-token', 'UsersController@getSocialToken')->name('api.get-social-token');
 
+    Route::post('update-user-social-token', 'UsersController@updateSocialToken')->name('api.update-social-token');
 
     Route::post('change-password', 'UsersController@changePassword')->name('api.change-password');
 

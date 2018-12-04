@@ -57,7 +57,10 @@ class User extends Authenticatable
     'education',
     'latitude',
     'longitude',
-    'birthdate'
+    'birthdate',
+    'spotify_token',
+    'insta_token'
+
      ];
 
     /**

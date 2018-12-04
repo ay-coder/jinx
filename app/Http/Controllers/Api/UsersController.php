@@ -1038,4 +1038,42 @@ class UsersController extends BaseApiController
             'status'    => false,
             ], 200);
     }
+
+    /**
+     * Get Social Token
+     * 
+     * @param  Request $request
+     * @return array
+     */
+    public function getSocialToken(Request $request)
+    {
+        $userInfo = $this->getAuthenticatedUser();
+        
+        return $this->successResponse([
+            'spotify_token' => isset($userInfo->spotify_token) ? $userInfo->spotify_token : '',
+            'insta_token'   => isset($userInfo->insta_token) ? $userInfo->insta_token : ''
+        ]);        
+    }
+
+    /**
+     * update Social Token
+     * 
+     * @param  Request $request
+     * @return array
+     */
+    public function updateSocialToken(Request $request)
+    {
+        $userInfo = $this->getAuthenticatedUser();
+            
+        if($request->has('spotify_token'))
+        {
+            $userInfo->spotify_token    = $request->get('spotify_token');
+            $userInfo->insta_token      = $request->get('insta_token');
+            $userInfo->save();
+        }
+        return $this->successResponse([
+            'spotify_token' => $request->has('spotify_token') ? $request->get('spotify_token') : '',
+            'insta_token'   => $request->has('insta_token') ? $request->get('insta_token') : ''
+        ]);        
+    }
 }
