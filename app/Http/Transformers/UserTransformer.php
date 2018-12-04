@@ -32,6 +32,7 @@ class UserTransformer extends Transformer
             'bio'           => $this->nulltoBlank($data->bio),
             'signup_by'     => (int) $data->signup_by,
             'phone'         => $this->nulltoBlank($data->phone),
+            'birthdate'     => $this->nulltoBlank($data->birthdate),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
         ];
     }
@@ -66,13 +67,14 @@ class UserTransformer extends Transformer
             'name'          => $this->nulltoBlank($data->name),
             'email'         => $this->nulltoBlank($data->email),
             'bio'           => $this->nulltoBlank($data->bio),
-            'is_archive'    => (int) $data->is_archive,
             'signup_by'     => (int) $data->signup_by,
             'phone'         => $this->nulltoBlank($data->phone),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
             'address'       => $this->nulltoBlank($data->address),
             'city'          => $this->nulltoBlank($data->city),
             'zip'           => $this->nulltoBlank($data->zip),
+            'birthdate'     => $this->nulltoBlank($data->birthdate),
+            'gender'        => $this->nulltoBlank($data->gender),
             'images'        => $userImages
         ];
     }

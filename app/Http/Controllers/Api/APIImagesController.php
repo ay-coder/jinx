@@ -149,22 +149,28 @@ class APIImagesController extends BaseApiController
      */
     public function delete(Request $request)
     {
-        $itemId = (int) hasher()->decode($request->get($this->primaryKey));
-
-        if($itemId)
+        if($request->has('image_id'))
         {
-            $status = $this->repository->destroy($itemId);
+            $userInfo = $this->getAuthenticatedUser();
+            $isExists = $this->repository->model->where([
+                'user_id' => $userInfo->id,
+                'id'      => $request->get('image_id')
+            ])->first();
 
-            if($status)
+            if(isset($isExists))
             {
-                return $this->successResponse([
-                    'success' => 'Images Deleted'
-                ], 'Images is Deleted Successfully');
+                if($isExists->delete())
+                {
+                    return $this->successResponse([
+                        'success' => 'Image Deleted Successfully'
+                    ], 'Image Deleted Successfully');
+                }
             }
+            
         }
-
+        
         return $this->setStatusCode(404)->failureResponse([
-            'reason' => 'Invalid Inputs'
-        ], 'Something went wrong !');
+            'reason' => 'No Image Found !'
+        ], 'No Image Found !');
     }
 }
