@@ -19,7 +19,7 @@ class UserTransformer extends Transformer
             foreach($images as $image)   
             {
                 $userImages[] = [
-                    'image_id'  => $image->id,
+                    'image_id'  => (int) $image->id,
                     'image'     =>  URL::to('/').'/uploads/user/'. $image->image
                 ];
             }
@@ -34,6 +34,8 @@ class UserTransformer extends Transformer
             'device_type'   =>   $data->device_type,
             'social_token'   =>   $this->nulltoBlank($data->social_token),
             'social_provider'   =>   $this->nulltoBlank($data->social_provider),
+            'profession'    => $this->nulltoBlank($data->profession),
+            'education'     => $this->nulltoBlank($data->education),
             'name'          => $this->nulltoBlank($data->name),
             'email'         => $this->nulltoBlank($data->email),
             'latitude'         => $this->nulltoBlank($data->latitude),
@@ -68,7 +70,7 @@ class UserTransformer extends Transformer
             foreach($images as $image)   
             {
                 $userImages[] = [
-                    'image_id'  => $image->id,
+                    'image_id'  => (int) $image->id,
                     'image'     =>  URL::to('/').'/uploads/user/'. $image->image
                 ];
             }
@@ -81,6 +83,8 @@ class UserTransformer extends Transformer
             'token'         => isset($data->token) ? $this->nulltoBlank($data->token) : '',
             'device_token'  => $data->device_token,
             'device_type'   => $this->nulltoBlank($data->device_type),
+            'profession'    => $this->nulltoBlank($data->profession),
+            'education'     => $this->nulltoBlank($data->education),
             'name'          => $this->nulltoBlank($data->name),
             'email'         => $this->nulltoBlank($data->email),
             'bio'           => $this->nulltoBlank($data->bio),
@@ -165,6 +169,8 @@ class UserTransformer extends Transformer
             'token'         => $this->nulltoBlank($data->token),
             'device_token'  => $data->device_token,
             'device_type'   =>   $data->device_type,
+            'profession'    => $this->nulltoBlank($data->profession),
+            'education'     => $this->nulltoBlank($data->education),
             'name'          => $this->nulltoBlank($data->name),
             'email'         => $this->nulltoBlank($data->email),
             'phone'         => $this->nulltoBlank($data->phone),
@@ -193,7 +199,7 @@ class UserTransformer extends Transformer
                     foreach($user->user_images as $userImage)
                     {
                         $images[] = [
-                            'image_id'  => $userImage->id,
+                            'image_id'  => (int) $userImage->id,
                             'image'     => URL::to('/').'/uploads/user/'.$userImage->image
                         ];
                     }
@@ -240,7 +246,7 @@ class UserTransformer extends Transformer
                 foreach($user->user_images as $userImage)
                 {
                     $images[] = [
-                        'image_id'  => $userImage->id,
+                        'image_id'  => (int) $userImage->id,
                         'image'     => URL::to('/').'/uploads/user/'.$userImage->image
                     ];
                 }
