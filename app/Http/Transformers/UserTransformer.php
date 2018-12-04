@@ -29,6 +29,8 @@ class UserTransformer extends Transformer
             'username'      => $data->username,
             'token'         => $this->nulltoBlank($data->token),
             'device_token'  => $data->device_token,
+            'spotify_token' => $this->nulltoBlank($data->spotify_token),
+            'insta_token'   => $this->nulltoBlank($data->insta_token),
             'device_type'   =>   $data->device_type,
             'social_token'   =>   $this->nulltoBlank($data->social_token),
             'social_provider'   =>   $this->nulltoBlank($data->social_provider),
