@@ -261,7 +261,7 @@ class UsersController extends BaseApiController
                 {
                     $user->insta_token = $request->get('insta_token');
                 }
-                
+
                 $user->save();
             }
 
@@ -1087,16 +1087,30 @@ class UsersController extends BaseApiController
     public function updateSocialToken(Request $request)
     {
         $userInfo = $this->getAuthenticatedUser();
-            
+        $user     = User::where('id', $userInfo->id)->first();
+
         if($request->has('spotify_token'))
         {
-            $userInfo->spotify_token    = $request->get('spotify_token');
-            $userInfo->insta_token      = $request->get('insta_token');
-            $userInfo->save();
+            $user->spotify_token    = $request->get('spotify_token');
         }
-        return $this->successResponse([
-            'spotify_token' => $request->has('spotify_token') ? $request->get('spotify_token') : '',
-            'insta_token'   => $request->has('insta_token') ? $request->get('insta_token') : ''
-        ]);        
+
+        if($request->has('insta_token'))
+        {
+            $user->insta_token = $request->get('insta_token');
+        }
+        
+        if($user->save())
+        {
+            return $this->successResponse([
+                'spotify_token' => $user->spotify_token,
+                'insta_token'   => $user->insta_token
+            ]);        
+        }
+        
+        return response()->json([
+        'error'     => 'No User Found for given details',
+        'message'   => 'No User Found for given details',
+        'status'    => false,
+        ], 200);
     }
 }
