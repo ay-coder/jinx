@@ -267,8 +267,8 @@ class UserTransformer extends Transformer
                 'profession'    => $this->nulltoBlank($user->profession),
                 'education'     => $this->nulltoBlank($user->education),
                 'birthdate'     => $this->nulltoBlank($user->birthdate),
-                'spotify_token' => $this->nulltoBlank($data->spotify_token),
-                'insta_token'   => $this->nulltoBlank($data->insta_token),
+                'spotify_token' => $this->nulltoBlank($user->spotify_token),
+                'insta_token'   => $this->nulltoBlank($user->insta_token),
                 'distance'      => 10,
                 'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
                 'userImages'    => $images
