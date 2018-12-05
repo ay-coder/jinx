@@ -74,6 +74,18 @@ class UsersController extends BaseApiController
         {
             $user = Auth::user();
             $user->device_token = $request->get('device_token');
+
+
+            if($request->has('spotify_token'))
+            {
+                $user->spotify_token = $request->get('spotify_token');
+            }
+
+            if($request->has('insta_token'))
+            {
+                $user->insta_token = $request->get('insta_token');
+            }
+
             $user->save();
         }
 
@@ -239,6 +251,17 @@ class UsersController extends BaseApiController
                 $user = Auth::user();
                 $user->device_type  = $request->get('device_type');
                 $user->device_token = $request->get('device_token');
+
+                if($request->has('spotify_token'))
+                {
+                    $user->spotify_token = $request->get('spotify_token');
+                }
+
+                if($request->has('insta_token'))
+                {
+                    $user->insta_token = $request->get('insta_token');
+                }
+                
                 $user->save();
             }
 
