@@ -172,6 +172,8 @@ class UserTransformer extends Transformer
             'profession'    => $this->nulltoBlank($data->profession),
             'education'     => $this->nulltoBlank($data->education),
             'name'          => $this->nulltoBlank($data->name),
+            'spotify_token' => $this->nulltoBlank($data->spotify_token),
+            'insta_token'   => $this->nulltoBlank($data->insta_token),
             'email'         => $this->nulltoBlank($data->email),
             'phone'         => $this->nulltoBlank($data->phone),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
@@ -216,6 +218,8 @@ class UserTransformer extends Transformer
                     'profession'    => $this->nulltoBlank($user->profession),
                     'education'     => $this->nulltoBlank($user->education),
                     'birthdate'     => $this->nulltoBlank($user->birthdate),
+                    'spotify_token' => $this->nulltoBlank($data->spotify_token),
+                    'insta_token'   => $this->nulltoBlank($data->insta_token),
                     'distance'      => 10,
                     'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
                     'userImages'    => $images
@@ -263,6 +267,8 @@ class UserTransformer extends Transformer
                 'profession'    => $this->nulltoBlank($user->profession),
                 'education'     => $this->nulltoBlank($user->education),
                 'birthdate'     => $this->nulltoBlank($user->birthdate),
+                'spotify_token' => $this->nulltoBlank($data->spotify_token),
+                'insta_token'   => $this->nulltoBlank($data->insta_token),
                 'distance'      => 10,
                 'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
                 'userImages'    => $images
