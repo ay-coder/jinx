@@ -14,6 +14,30 @@ class UserTransformer extends Transformer
             'image'     => URL::to('/').'/uploads/user/' . $data->profile_pic
         ];
 
+        $userInstaImages    = [];
+        $userSpotifyImages  = [];
+
+        if(isset($data->social_images) && count($data->social_images))
+        {
+            foreach($data->social_images as $socialImage)
+            {
+                if($socialImage->social_type == 'instagram')   
+                {
+                    $userInstaImages[] = [
+                        'social_image_id'   => (int) $socialImage->id,
+                        'social_image_url'  => $socialImage->image_url
+                    ];
+                }
+                else
+                {
+                    $userSpotifyImages[] = [
+                        'social_image_id'   => (int) $socialImage->id,
+                        'social_image_url'  => $socialImage->image_url
+                    ];
+                }
+            }
+        }
+
         if(isset($images))
         {
             foreach($images as $image)   
@@ -52,7 +76,9 @@ class UserTransformer extends Transformer
             'phone'         => $this->nulltoBlank($data->phone),
             'birthdate'     => $this->nulltoBlank($data->birthdate),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
-            'images'        => $userImages
+            'images'        => $userImages,
+            'insta_images'  => $userInstaImages,
+            'spotify_images'=> $userSpotifyImages
         ];
     }
     
@@ -64,6 +90,30 @@ class UserTransformer extends Transformer
             'image_id'  => 0,
             'image'     => URL::to('/').'/uploads/user/' . $data->profile_pic
         ];
+
+        $userInstaImages    = [];
+        $userSpotifyImages  = [];
+
+        if(isset($data->social_images) && count($data->social_images))
+        {
+            foreach($data->social_images as $socialImage)
+            {
+                if($socialImage->social_type == 'instagram')   
+                {
+                    $userInstaImages[] = [
+                        'social_image_id'   => (int) $socialImage->id,
+                        'social_image_url'  => $socialImage->image_url
+                    ];
+                }
+                else
+                {
+                    $userSpotifyImages[] = [
+                        'social_image_id'   => (int) $socialImage->id,
+                        'social_image_url'  => $socialImage->image_url
+                    ];
+                }
+            }
+        }
 
         if(isset($images))
         {
@@ -98,7 +148,9 @@ class UserTransformer extends Transformer
             'gender'        => $this->nulltoBlank($data->gender),
             'spotify_token' => $this->nulltoBlank($data->spotify_token),
             'insta_token'   => $this->nulltoBlank($data->insta_token),
-            'images'        => $userImages
+            'images'        => $userImages,
+            'insta_images'  => $userInstaImages,
+            'spotify_images'=> $userSpotifyImages
         ];
     }
 
@@ -162,6 +214,29 @@ class UserTransformer extends Transformer
             $token      = explode(" ", $headerToken);
             $userToken  = $token[1];
         }
+        $userInstaImages    = [];
+        $userSpotifyImages  = [];
+
+        if(isset($data->social_images) && count($data->social_images))
+        {
+            foreach($data->social_images as $socialImage)
+            {
+                if($socialImage->social_type == 'instagram')   
+                {
+                    $userInstaImages[] = [
+                        'social_image_id'   => (int) $socialImage->id,
+                        'social_image_url'  => $socialImage->image_url
+                    ];
+                }
+                else
+                {
+                    $userSpotifyImages[] = [
+                        'social_image_id'   => (int) $socialImage->id,
+                        'social_image_url'  => $socialImage->image_url
+                    ];
+                }
+            }
+        }
 
         return [
             'user_id'       => $data->id,
@@ -178,6 +253,8 @@ class UserTransformer extends Transformer
             'phone'         => $this->nulltoBlank($data->phone),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
             'bio'           => $this->nulltoBlank($data->bio),
+            'insta_images'  => $userInstaImages,
+            'spotify_images'=> $userSpotifyImages
         ]; 
     }
 
@@ -195,6 +272,30 @@ class UserTransformer extends Transformer
                     'image_id'  => 0,
                     'image'     => URL::to('/').'/uploads/user/' . $user->profile_pic
                 ];
+
+                $userInstaImages    = [];
+                $userSpotifyImages  = [];
+
+                if(isset($user->social_images) && count($user->social_images))
+                {
+                    foreach($user->social_images as $socialImage)
+                    {
+                        if($socialImage->social_type == 'instagram')   
+                        {
+                            $userInstaImages[] = [
+                                'social_image_id'   => (int) $socialImage->id,
+                                'social_image_url'  => $socialImage->image_url
+                            ];
+                        }
+                        else
+                        {
+                            $userSpotifyImages[] = [
+                                'social_image_id'   => (int) $socialImage->id,
+                                'social_image_url'  => $socialImage->image_url
+                            ];
+                        }
+                    }
+                }
 
                 if(isset($user->user_images))                
                 {   
@@ -222,7 +323,9 @@ class UserTransformer extends Transformer
                     'insta_token'   => $this->nulltoBlank($user->insta_token),
                     'distance'      => 10,
                     'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
-                    'userImages'    => $images
+                    'userImages'    => $images,
+                    'insta_images'  => $userInstaImages,
+                    'spotify_images'=> $userSpotifyImages
                 ];
             }
         }
@@ -244,6 +347,30 @@ class UserTransformer extends Transformer
                 'image_id'  => 0,
                 'image'     => URL::to('/').'/uploads/user/' . $user->profile_pic
             ];
+
+            $userInstaImages    = [];
+            $userSpotifyImages  = [];
+
+            if(isset($user->social_images) && count($user->social_images))
+            {
+                foreach($user->social_images as $socialImage)
+                {
+                    if($socialImage->social_type == 'instagram')   
+                    {
+                        $userInstaImages[] = [
+                            'social_image_id'   => (int) $socialImage->id,
+                            'social_image_url'  => $socialImage->image_url
+                        ];
+                    }
+                    else
+                    {
+                        $userSpotifyImages[] = [
+                            'social_image_id'   => (int) $socialImage->id,
+                            'social_image_url'  => $socialImage->image_url
+                        ];
+                    }
+                }
+            }
 
             if(isset($user->user_images))                
             {   
@@ -271,7 +398,9 @@ class UserTransformer extends Transformer
                 'insta_token'   => $this->nulltoBlank($user->insta_token),
                 'distance'      => 10,
                 'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
-                'userImages'    => $images
+                'userImages'    => $images,
+                'insta_images'  => $userInstaImages,
+                'spotify_images'=> $userSpotifyImages
             ];
         }
 

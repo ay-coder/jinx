@@ -13,6 +13,7 @@ use App\Models\ReportFeeds\ReportFeeds;
 use App\Models\FeedTagUsers\FeedTagUsers;
 use App\Models\Images\Images;
 use App\Models\Settings\Settings;
+use App\Models\SocialImages\SocialImages;
 
 /**
  * Class UserRelationship.
@@ -187,5 +188,15 @@ trait UserRelationship
     public function user_settings()
     {
         return $this->hasOne(Settings::class, 'user_id');
+    }
+
+    /**
+     * User Social Images
+     * 
+     * @return relation
+     */
+    public function social_images()
+    {
+        return $this->hasMany(SocialImages::class, 'user_id');
     }
 }

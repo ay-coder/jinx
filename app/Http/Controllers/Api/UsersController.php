@@ -28,6 +28,7 @@ use App\Models\Settings\Settings;
 use App\Models\Images\Images;
 use App\Models\UserInterests\UserInterests;
 use App\Models\BlockUsers\BlockUsers;
+use App\Models\SocialImages\SocialImages;
 
 class UsersController extends BaseApiController
 {
@@ -1094,16 +1095,92 @@ class UsersController extends BaseApiController
             $user->spotify_token    = $request->get('spotify_token');
         }
 
+        if($request->has('spotify_images'))
+        {
+            $spotifyImages = $request->get('spotify_images');
+            $spotifyData   = [];
+
+            foreach($spotifyImages as $spotifyImage)
+            {
+                $spotifyData[] = [ 
+                    'user_id'       => $userInfo->id,
+                    'social_type'   => 'spotify',
+                    'image_url'     => $spotifyImage
+                ];
+            }
+
+            if(count($spotifyData) > 0)
+            {
+                SocialImages::where([
+                    'user_id'       => $userInfo->id,
+                    'social_type'   => 'spotify'
+                ])->delete();
+
+                SocialImages::insert($spotifyData);
+            }
+        }
+
         if($request->has('insta_token'))
         {
             $user->insta_token = $request->get('insta_token');
         }
+
+        if($request->has('insta_images'))
+        {
+            $instaImages    = $request->get('insta_images');
+            $instaData      = [];
+
+            foreach($instaImages as $instaImage)
+            {
+                $instaData[] = [ 
+                    'user_id'       => $userInfo->id,
+                    'social_type'   => 'instagram',
+                    'image_url'     => $instaImage
+                ];
+            }
+
+            if(count($instaData) > 0)
+            {
+                SocialImages::where([
+                    'user_id'       => $userInfo->id,
+                    'social_type'   => 'instagram'
+                ])->delete();
+
+                SocialImages::insert($instaData);
+            }
+        }
         
         if($user->save())
         {
+            $userInstaImages        = [];
+            $userSpotifyImages      = [];
+
+            if(isset($user->social_images) && count($user->social_images))
+            {
+                foreach($user->social_images as $socialImage)
+                {
+                    if($socialImage->social_type == 'instagram')   
+                    {
+                        $userInstaImages[] = [
+                            'social_image_id'   => (int) $socialImage->id,
+                            'social_image_url'  => $socialImage->image_url
+                        ];
+                    }
+                    else
+                    {
+                        $userSpotifyImages[] = [
+                            'social_image_id'   => (int) $socialImage->id,
+                            'social_image_url'  => $socialImage->image_url
+                        ];
+                    }
+                }
+            }
             return $this->successResponse([
                 'spotify_token' => $user->spotify_token,
-                'insta_token'   => $user->insta_token
+                'insta_token'   => $user->insta_token,
+                'insta_images'  => $userInstaImages,
+                'spotify_images'  => $userSpotifyImages
+
             ]);        
         }
         
