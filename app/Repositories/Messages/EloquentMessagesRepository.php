@@ -360,11 +360,15 @@ class EloquentMessagesRepository extends DbRepository
             $receiverIds    = $chatBoat->pluck('other_user_id')->toArray();
             $allowedUserIds = array_unique(array_merge($senderIds, $receiverIds));
 
-
-            $messages = $this->model->where(function($q) use($allowedUserIds)
+            /**
+             *   Chat Boat
+             * where(function($q) use($allowedUserIds)
             {
                 $q->whereIn('user_id', $allowedUserIds)->whereIn('other_user_id', $allowedUserIds);
             })
+             *
+             */
+            $messages = $this->model
             /*whereIn('user_id', $allowedUserIds)
             ->orWhereIn('other_user_id', $allowedUserIds)*/
             ->with([
