@@ -114,6 +114,7 @@ class APIUserInterestsController extends BaseApiController
                 {
                     Messages::create([
                         'user_id'       => $userInfo->id,
+                        'is_admin'      => 1,
                         'other_user_id' => $request->get('interested_user_id'),
                         'message'       => "Let's Talk "
                     ]);

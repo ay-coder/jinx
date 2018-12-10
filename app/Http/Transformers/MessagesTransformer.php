@@ -51,6 +51,7 @@ class MessagesTransformer extends Transformer
             return [
                 'message_id'    => (int) $item->id,
                 'user_id'       => (int) $item->user_id,
+                'is_admin'      => (int) $item->is_admin,
                 'other_user_id'   => (int) $item->other_user_id,
                 'message'       => $item->message,
                 'user_name'      => isset($item->user) ? $item->user->name : '',
