@@ -1095,6 +1095,11 @@ class UsersController extends BaseApiController
             $user->spotify_token    = $request->get('spotify_token');
         }
 
+        if($request->has('spotify_user_id'))
+        {
+            $user->spotify_user_id = $request->get('spotify_user_id');
+        }
+
         if($request->has('spotify_images'))
         {
             $spotifyImages = $request->get('spotify_images');

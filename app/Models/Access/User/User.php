@@ -59,6 +59,7 @@ class User extends Authenticatable
     'longitude',
     'birthdate',
     'spotify_token',
+    'spotify_user_id',
     'insta_token'
 
      ];
