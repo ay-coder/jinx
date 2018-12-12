@@ -971,12 +971,20 @@ class UsersController extends BaseApiController
                 $to   = new \DateTime('today');
                 $age  = $from->diff($to)->y;
 
-                if($age >= $settings->age_start_range && $age <= $settings->age_end_range)
+                if(isset($settings->age_start_range) && isset($settings->age_end_range))
+                {
+                    if($age >= $settings->age_start_range && $age <= $settings->age_end_range)
+                    {
+                        return $item;
+                    }
+
+                    return null;
+                }
+                else
                 {
                     return $item;
                 }
 
-                return null;
         });
         
         $responseData = $this->userTransformer->showUsersTransform($users);
