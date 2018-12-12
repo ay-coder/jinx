@@ -23,6 +23,7 @@ use App\Models\Connections\Connections;
 use App\Library\Push\PushNotification;
 use App\Models\Categories\Categories;
 use URL;
+use DB;
 use App\Models\Templates\Templates;
 use App\Models\Settings\Settings;
 use App\Models\Images\Images;
@@ -955,7 +956,23 @@ class UsersController extends BaseApiController
         $userInfo   = $this->getAuthenticatedUser();
         $settings   = access()->getUserSettings($userInfo->id);
         $blockUserIds = access()->getMyBlockedUserIds($userInfo->id);
+        $distanceUsers = false;
         $condition  = [];
+
+        if($request->has('latitude') && $request->has('longitude'))
+        {
+            $lat    = $request->get('latitude');
+            $long   = $request->get('longitude');
+            $distanceUsers  = DB::select("SELECT id, ( 6371 * acos( cos( radians($lat) ) * cos( radians( `latitude` ) ) * cos( radians( `longitude` ) - radians($long
+                    ) ) + sin( radians($lat) ) * sin( radians( `latitude` ) ) ) ) AS distance
+                FROM users
+                ORDER BY distance ASC");
+            if(isset($distanceUsers))
+            {
+                $distanceUsers = collect($distanceUsers);
+            }
+        }
+
 
         if(isset($settings->interested) && $settings->interested != 'Everyone')
         {
@@ -965,28 +982,42 @@ class UsersController extends BaseApiController
         }
         $users      = User::with('user_images')->whereNotIn('id', $blockUserIds)->where($condition)->where('id', '!=', 1)->where('id', '!=', $userInfo->id)->get();
 
-        $users  = $users->filter(function($item) use($settings)
+        $users  = $users->filter(function($item) use($settings, $distanceUsers) 
         {
-                $from = new \DateTime($item->birthdate);
-                $to   = new \DateTime('today');
-                $age  = $from->diff($to)->y;
+            if($distanceUsers)
+            {
+                $isExist = $distanceUsers->where('id', $item->id)->first();
 
-                if(isset($settings->age_start_range) && isset($settings->age_end_range))
+                if($isExist)
                 {
-                    if($age >= $settings->age_start_range && $age <= $settings->age_end_range)
-                    {
-                        return $item;
-                    }
-
-                    return null;
+                    $item->distance = $isExist->distance;
                 }
-                else
+            }
+            
+            $from = new \DateTime($item->birthdate);
+            $to   = new \DateTime('today');
+            $age  = $from->diff($to)->y;
+
+            if(isset($settings->age_start_range) && isset($settings->age_end_range))
+            {
+                if($age >= $settings->age_start_range && $age <= $settings->age_end_range)
                 {
                     return $item;
                 }
 
+                return null;
+            }
+            else
+            {
+                return $item;
+            }
         });
         
+        if(isset($settings->distance))
+        {
+            $users  = $users->where('distance', '>=', $settings->distance);
+        }
+
         $responseData = $this->userTransformer->showUsersTransform($users);
 
         return $this->successResponse($responseData);

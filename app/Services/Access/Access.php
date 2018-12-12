@@ -9,6 +9,7 @@ use App\Models\FeedNotifications\FeedNotifications;
 use App\Library\Push\PushNotification;
 use App\Models\Settings\Settings;
 use App\Models\BlockUsers\BlockUsers;
+use App\Models\Messages\Messages;
 
 /**
  * Class Access.
@@ -412,6 +413,26 @@ class Access
 
         $randomNumber = rand(0, 2);
         return $questiions[$randomNumber];
+    }
+
+    /**
+     * Get Unread Message Count
+     * 
+     * @param int $userId
+     * @return int
+     */
+    public function getUnreadMessageCount($userId = null, $otherUserId = null)
+    {
+        if($userId && $otherUserId)
+        {
+            return Messages::where([
+                'is_read'       => 0,
+                'other_user_id' => $userId,
+                'user_id'       => $otherUserId
+            ])->count();
+        }
+
+        return 0;
     }
 }
 

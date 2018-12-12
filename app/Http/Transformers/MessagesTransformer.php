@@ -33,8 +33,23 @@ class MessagesTransformer extends Transformer
             $currentUserId = access()->user()->id;
             foreach($items as $item)
             {
-                $isRead     = $currentUserId == $item->user_id ? 1 : $item->is_read;
-                $response[] = $this->singleMessageTranform($item);
+                $unreadCount = 0;
+
+                if($currentUserId == $item->user_id)
+                {
+                    $unreadCount = access()->getUnreadMessageCount($item->user_id, $item->other_user_id);
+                }
+                else
+                {
+                    $unreadCount = access()->getUnreadMessageCount($item->other_user_id, $item->user_id);
+                }
+
+                $messageData    = [];
+                $isRead         = $currentUserId == $item->user_id ? 1 : $item->is_read;
+                
+                $messageData    = array_merge($this->singleMessageTranform($item),
+                    ['unread_count' => $unreadCount]);
+                $response[]     = $messageData;
             }
         }
 
@@ -45,9 +60,9 @@ class MessagesTransformer extends Transformer
     {
         if($item)   
         {
-            $currentUserId = access()->user()->id;
+            $currentUserId  = access()->user()->id;
+            $isRead         = $currentUserId == $item->user_id ? 1 : $item->is_read;
             
-            $isRead = $currentUserId == $item->user_id ? 1 : $item->is_read;
             return [
                 'message_id'    => (int) $item->id,
                 'user_id'       => (int) $item->user_id,
@@ -56,6 +71,7 @@ class MessagesTransformer extends Transformer
                 'message'       => $item->message,
                 'user_name'      => isset($item->user) ? $item->user->name : '',
                 'uesr_profile_pic'  => isset($item->user) ? URL::to('/').'/uploads/user/' . $item->user->profile_pic : '',
+                'user_profile_pic'  => isset($item->user) ? URL::to('/').'/uploads/user/' . $item->user->profile_pic : '',
                 'other_user_name'  => isset($item->other_user) ? $item->other_user->name : '',
                 'other_user_patient_pic'   => isset($item->other_user) ? URL::to('/').'/uploads/user/' . $item->other_user->profile_pic : '',
                 'is_read'       => $isRead,

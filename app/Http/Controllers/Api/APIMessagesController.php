@@ -77,6 +77,24 @@ class APIMessagesController extends BaseApiController
             
             if($messages && count($messages))
             {
+                $userInfo       = $this->getAuthenticatedUser();
+                $readMessageIds = [];
+
+                foreach($messages as $message)
+                {
+                    if($userInfo->id == $message->other_user_id)
+                    {
+                        $readMessageIds[] = $message->id;
+                    }
+                }
+
+
+                // Set Read Message
+                if(count($readMessageIds))
+                {
+                    $this->repository->model->whereIn('id', $readMessageIds)->update(['is_read' => 1]);
+                }
+                
                 $itemsOutput = $this->messagesTransformer->messageTranform($messages);
 
                 return $this->successResponse($itemsOutput);

@@ -380,17 +380,22 @@ class EloquentMessagesRepository extends DbRepository
 
             $response   = [];
             $userIds    = [];
+            $inPair     = [];
+            $outPair    = [];
 
             foreach($messages as $message)
             {
-                if(! in_array($message->other_user_id, $userIds))
+                $checkInPair = $message->user_id . ','. $message->other_user_id;
+                $checkOutPair = $message->other_user_id . ','. $message->user_id;
+
+                if(!in_array($checkInPair, $inPair) && !in_array($checkOutPair, $outPair) && !in_array($checkOutPair, $inPair) && !in_array($checkInPair, $outPair) )
                 {
-                    $userIds[]      = $message->other_user_id;
                     $response[]     = $message;
-                    continue;   
+                    $inPair[]       = $checkInPair;
+                    $outPair[]      = $checkOutPair;
                 }
             }
-
+            
             return $response;
         }
         
