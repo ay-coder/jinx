@@ -957,7 +957,7 @@ class UsersController extends BaseApiController
         $blockUserIds = access()->getMyBlockedUserIds($userInfo->id);
         $condition  = [];
 
-        if($settings->interested != 'Everyone')
+        if(isset($settings->interested) && $settings->interested != 'Everyone')
         {
             $condition  = [
                 'gender' => $settings->interested
