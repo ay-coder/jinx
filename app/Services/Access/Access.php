@@ -434,6 +434,25 @@ class Access
 
         return 0;
     }
+
+    /**
+     * Get Unread Message Count
+     * 
+     * @param int $userId
+     * @return int
+     */
+    public function getUnreadUserMessageCount($userId = null)
+    {
+        if($userId)
+        {
+            return Messages::where([
+                'is_read'       => 0,
+                'other_user_id' => $userId,
+            ])->count();
+        }
+
+        return 0;
+    }
 }
 
 

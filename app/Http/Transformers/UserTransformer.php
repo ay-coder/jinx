@@ -263,13 +263,15 @@ class UserTransformer extends Transformer
 
     public function showUsersTransform($users)
     {
-        $response = [];
+        $response       = [];
+        $currentUserId  = access()->user()->id;
 
         if(isset($users))
         {
             foreach($users as $user)
             {
-                $images = [];
+                $unreadCount    = access()->getUnreadUserMessageCount($user->id);
+                $images         = [];
 
                 $images[] = [
                     'image_id'  => 0,
@@ -327,6 +329,7 @@ class UserTransformer extends Transformer
                     'insta_token'   => $this->nulltoBlank($user->insta_token),
                     'distance'      => 10,
                     'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
+                    'unread_count'  => $unreadCount,
                     'userImages'    => $images,
                     'insta_images'  => $userInstaImages,
                     'spotify_images'=> $userSpotifyImages
