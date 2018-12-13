@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Transformers\MessagesTransformer;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Access\User\User;
 use App\Repositories\Messages\EloquentMessagesRepository;
 
 class APIMessagesController extends BaseApiController
@@ -126,6 +127,22 @@ class APIMessagesController extends BaseApiController
 
             if($model)
             {
+                $otherUser = User::find($request->get('other_user_id'));
+                
+                $text               = $userInfo->name . ' has sent you a message.';
+                $notificationData   = [
+                    'title'                 => $text,
+                    'user_id'               => $userInfo->id,
+                    'other_user_id'         => $otherUser->id,
+                    'message_id'            => $model->id,
+                    'notification_type'     => 'NEW_MESSAGE',
+                    'badge_count'           => access()->getUnreadNotificationCount($otherUser->id)
+                ];
+
+                access()->addNotification($notificationData);
+                access()->sentPushNotification($otherUser, $notificationData);
+
+
                 $responseData = $this->messagesTransformer->singleMessageTranform($model);
                 return $this->successResponse($responseData);
             }

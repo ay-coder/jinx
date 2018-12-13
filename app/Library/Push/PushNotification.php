@@ -8,7 +8,7 @@ class PushNotification
 	private static $API_ACCESS_KEY = 'AIzaSyDG3fYAj1uW7VB-wejaMJyJXiO5JagAsYI';
 
 	// (iOS) Private key's passphrase.
-	private static $passphrase = 'n1234567890';
+	private static $passphrase = '1234567890';
 	
 	// (Windows Phone 8) The name of our push channel.
     private static $channelName = "";
@@ -140,7 +140,7 @@ class PushNotification
 		$ctx = stream_context_create();
 
 		// ck.pem is your certificate file
-		stream_context_set_option($ctx, 'ssl', 'local_cert', public_path().DIRECTORY_SEPARATOR.'gratitude.pem');
+		stream_context_set_option($ctx, 'ssl', 'local_cert', public_path().DIRECTORY_SEPARATOR.'jinx.pem');
 		stream_context_set_option($ctx, 'ssl', 'passphrase', self::$passphrase);
 
 		//LIVE URL - gateway.push.apple.com
@@ -157,19 +157,13 @@ class PushNotification
 		// Create the payload body
 		$body['aps'] = array(
 			'alert' => array(
-			    'title' 	=> $data['mtitle'],
-                'body' 		=> $data['mdesc'],
-                'feed_id' 	=> isset($data['feed_id']) ? (string) $data['feed_id'] : '',
-                'feed_type' => isset($data['feed_type']) ? (string) $data['feed_type'] : '',
-                'user_id' 	=> isset($data['user_id']) ? $data['user_id'] : '',
-                'mtype' 	=> isset($data['mtype']) ? $data['mtype'] : '',
-                'from_user_id' => isset($data['from_user_id']) ? $data['from_user_id'] : '',
-                'to_user_id' => isset($data['to_user_id']) ? $data['to_user_id'] : '',
-                'comment_id' 	=> isset($data['comment_id']) ? $data['comment_id'] : '',
-                'tagged_user_id' 	=> isset($data['tagged_user_id']) ? $data['tagged_user_id'] : '',
-
+			    'title'		=> $data['title'],
+                'message_id' => isset($data['message_id']) ? (string) $data['message_id'] : '',
+                'notification_type' => isset($data['notification_type']) ? (string) $data['notification_type'] : '',
+                'user_id' 		=> isset($data['user_id']) ? $data['user_id'] : '',
+                'other_user_id' => isset($data['other_user_id']) ? $data['other_user_id'] : ''
             ),
-            'badge'	=> isset($data['badgeCount']) ? $data['badgeCount'] : 0,
+            'badge'	=> isset($data['badge_count']) ? $data['badge_count'] : 0,
 			'sound' => 'default'
 		);
 

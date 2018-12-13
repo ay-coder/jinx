@@ -8,6 +8,7 @@ use App\Repositories\UserInterests\EloquentUserInterestsRepository;
 use App\Models\UserInterests\UserInterests;
 use App\Models\ChatBoat\ChatBoat;
 use App\Models\Messages\Messages;
+use App\Models\Access\User\User;
 
 class APIUserInterestsController extends BaseApiController
 {
@@ -79,8 +80,8 @@ class APIUserInterestsController extends BaseApiController
         {
             $userInfo   = $this->getAuthenticatedUser();
             $isExists   = UserInterests::where([
-                'user_id' => $userInfo->id,
-                'interested_user_id' => $request->get('interested_user_id')
+                'user_id'               => $userInfo->id,
+                'interested_user_id'    => $request->get('interested_user_id')
             ])->first();
 
             if(isset($isExists))
@@ -112,12 +113,67 @@ class APIUserInterestsController extends BaseApiController
 
                 if($userInterest && $otherUserInterest)
                 {
-                    Messages::create([
+                    $userOne = User::find($userInfo->id);
+                    $userTwo = User::find($request->get('interested_user_id'));
+                    
+                    $text = $userOne->name . ' is a Match and has been added to your Roster!';
+                    
+                    $notificationData = [
+                        'title'                 => $text,
+                        'user_id'               => $userOne->id,
+                        'other_user_id'         => $userTwo->id,
+                        'notification_type'     => 'MUTUAL_LIKE',
+                        'badge_count'           => access()->getUnreadNotificationCount($userTwo->id)
+                    ];
+
+                    access()->addNotification($notificationData);
+                    access()->sentPushNotification($userTwo, $notificationData);
+
+                    $text2 = $userTwo->name . ' is a Match and has been added to your Roster!';
+                    
+                    $notificationData2 = [
+                        'title'                 => $text2,
+                        'user_id'               => $userTwo->id,
+                        'other_user_id'         => $userOne->id,
+                        'notification_type'     => 'MUTUAL_LIKE',
+                        'badge_count'           => access()->getUnreadNotificationCount($userOne->id)
+                    ];
+
+                    access()->addNotification($notificationData2);
+                    access()->sentPushNotification($userOne, $notificationData2);
+
+                    $message = Messages::create([
                         'user_id'       => $userInfo->id,
                         'is_admin'      => 1,
                         'other_user_id' => $request->get('interested_user_id'),
                         'message'       => "Let's Talk "
                     ]);
+                    
+                    $text3 = 'Kitbot has sent you a message.';
+                    
+                    $notificationData3 = [
+                        'title'                 => $text3,
+                        'user_id'               => 1,
+                        'other_user_id'         => $userOne->id,
+                        'message_id'            => $message->id,
+                        'notification_type'     => 'KITBOAT_MESSAGE',
+                        'badge_count'           => access()->getUnreadNotificationCount($userOne->id)
+                    ];
+
+                    $notificationData4 = [
+                        'title'                 => $text3,
+                        'user_id'               => 1,
+                        'other_user_id'         => $userTwo->id,
+                        'message_id'            => $message->id,
+                        'notification_type'     => 'KITBOAT_MESSAGE',
+                        'badge_count'           => access()->getUnreadNotificationCount($userTwo->id)
+                    ];
+
+                    access()->addNotification($notificationData3);
+                    access()->sentPushNotification($userOne, $notificationData3);
+
+                    access()->addNotification($notificationData4);
+                    access()->sentPushNotification($userTwo, $notificationData4);
 
                     //$question = access()->getRandomQuestion();
                     /* $chatBoat = ChatBoat::create([

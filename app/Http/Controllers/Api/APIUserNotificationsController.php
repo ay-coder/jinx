@@ -2,18 +2,18 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Transformers\TempBlockTransformer;
+use App\Http\Transformers\UserNotificationsTransformer;
 use App\Http\Controllers\Api\BaseApiController;
-use App\Repositories\TempBlock\EloquentTempBlockRepository;
+use App\Repositories\UserNotifications\EloquentUserNotificationsRepository;
 
-class APITempBlockController extends BaseApiController
+class APIUserNotificationsController extends BaseApiController
 {
     /**
-     * TempBlock Transformer
+     * UserNotifications Transformer
      *
      * @var Object
      */
-    protected $tempblockTransformer;
+    protected $usernotificationsTransformer;
 
     /**
      * Repository
@@ -27,7 +27,7 @@ class APITempBlockController extends BaseApiController
      *
      * @var string
      */
-    protected $primaryKey = 'tempblockId';
+    protected $primaryKey = 'usernotificationsId';
 
     /**
      * __construct
@@ -35,33 +35,39 @@ class APITempBlockController extends BaseApiController
      */
     public function __construct()
     {
-        $this->repository                       = new EloquentTempBlockRepository();
-        $this->tempblockTransformer = new TempBlockTransformer();
+        $this->repository                       = new EloquentUserNotificationsRepository();
+        $this->usernotificationsTransformer = new UserNotificationsTransformer();
     }
 
     /**
-     * List of All TempBlock
+     * List of All UserNotifications
      *
      * @param Request $request
      * @return json
      */
     public function index(Request $request)
     {
+        $userInfo   = $this->getAuthenticatedUser();
         $paginate   = $request->get('paginate') ? $request->get('paginate') : false;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'ASC';
-        $items      = $paginate ? $this->repository->model->orderBy($orderBy, $order)->paginate($paginate)->items() : $this->repository->getAll($orderBy, $order);
+        $items      = $this->repository->model->with('user', 'other_user')->where([
+            'other_user_id' => $userInfo->id,
+            'is_deleted'    => 0
+        ])
+        ->orderBy('id', 'desc')
+        ->get();
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->tempblockTransformer->transformCollection($items);
+            $itemsOutput = $this->usernotificationsTransformer->transformCollection($items);
 
             return $this->successResponse($itemsOutput);
         }
 
         return $this->setStatusCode(400)->failureResponse([
-            'message' => 'Unable to find TempBlock!'
-            ], 'No TempBlock Found !');
+            'message' => 'No Notifications Found!'
+            ], 'No Notifications Found');
     }
 
     /**
@@ -72,67 +78,49 @@ class APITempBlockController extends BaseApiController
      */
     public function create(Request $request)
     {
-        if($request->has('block_user_id'))
+        $model = $this->repository->create($request->all());
+
+        if($model)
         {
-            $userInfo       = $this->getAuthenticatedUser();
-            $blockUserId    = $request->get('block_user_id');
+            $responseData = $this->usernotificationsTransformer->transform($model);
 
-            $isExist = $this->repository->model->where([
-                'user_id'       => $userInfo->id,
-                'block_user_id' => $request->get('block_user_id')
-            ])->first();
-
-            if(isset($isExist) && count($isExist))
-            {
-                return $this->setStatusCode(200)->failureResponse([
-                    'reason' => 'Already Blocked!'
-                    ], 'Already Blocked!');
-            }
-            
-            $blockData = [
-                'user_id'       => $userInfo->id,
-                'block_user_id' => $request->get('block_user_id'),
-                'description'   => 'Not Interested'
-            ];
-
-            $model = $this->repository->create($blockData);
-
-            if($model)
-            {
-                $responseData = [
-                    'message' => 'User Blocked Successfully!'
-                ];
-                return $this->successResponse($responseData, 'User Blocked Successfully!');
-            }
+            return $this->successResponse($responseData, 'UserNotifications is Created Successfully');
         }
 
-        return $this->setStatusCode(200)->failureResponse([
-            'reason' => 'Invalid Block User Id!'
-            ], 'Invalid Block User Id!');
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'Invalid Inputs'
+            ], 'Something went wrong !');
     }
 
     /**
-     * Create
+     * Read All
      *
      * @param Request $request
      * @return string
      */
-    public function clearAll(Request $request)
+    public function readAll(Request $request)
     {
-        $userInfo   = $this->getAuthenticatedUser();
-        $output     = $this->repository->model->where([
-            'user_id'       => $userInfo->id,
-            'description'   => 'Not Interested'
-        ])->delete();
+        $userInfo = $this->getAuthenticatedUser();
+        $status   = $this->repository->model->where([
+            'other_user_id' => $userInfo->id,
+            'is_read'       => 0
+        ])->update([
+            'is_read' => 1
+        ]);
 
-        $responseData = [
-            'message' => 'Block User list Cleared Successfully!'
-        ];
-        
-        return $this->successResponse($responseData, 'Block User list Cleared Successfully!');
+        if($status)
+        {
+            $responseData = [
+                'message' => 'Messages Read Successfully!'
+            ];
+
+            return $this->successResponse($responseData, 'Messages Read Successfully!');
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'No Unread Messages Found!'
+            ], 'No Unread Messages Found!');
     }
-
-    
 
     /**
      * View
@@ -150,7 +138,7 @@ class APITempBlockController extends BaseApiController
 
             if($itemData)
             {
-                $responseData = $this->tempblockTransformer->transform($itemData);
+                $responseData = $this->usernotificationsTransformer->transform($itemData);
 
                 return $this->successResponse($responseData, 'View Item');
             }
@@ -178,9 +166,9 @@ class APITempBlockController extends BaseApiController
             if($status)
             {
                 $itemData       = $this->repository->getById($itemId);
-                $responseData   = $this->tempblockTransformer->transform($itemData);
+                $responseData   = $this->usernotificationsTransformer->transform($itemData);
 
-                return $this->successResponse($responseData, 'TempBlock is Edited Successfully');
+                return $this->successResponse($responseData, 'UserNotifications is Edited Successfully');
             }
         }
 
@@ -206,8 +194,8 @@ class APITempBlockController extends BaseApiController
             if($status)
             {
                 return $this->successResponse([
-                    'success' => 'TempBlock Deleted'
-                ], 'TempBlock is Deleted Successfully');
+                    'success' => 'UserNotifications Deleted'
+                ], 'UserNotifications is Deleted Successfully');
             }
         }
 

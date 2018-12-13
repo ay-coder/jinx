@@ -5,7 +5,8 @@ namespace App\Services\Access;
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Models\ReadPost\ReadPost;
 use App\Models\Connections\Connections;
-use App\Models\FeedNotifications\FeedNotifications;
+use App\Models\UserNotifications\UserNotifications;
+/*use App\Models\FeedNotifications\FeedNotifications;*/
 use App\Library\Push\PushNotification;
 use App\Models\Settings\Settings;
 use App\Models\BlockUsers\BlockUsers;
@@ -306,7 +307,7 @@ class Access
     {
         if(isset($data) && count($data))
         {
-            return FeedNotifications::create($data);
+            return UserNotifications::create($data);
         }
 
         return false;
@@ -324,14 +325,9 @@ class Access
     {
         if($user && $payload)
         {
-            if(isset($user->device_token) && strlen($user->device_token) > 4 && $user->device_type == 1)
+            if(isset($user->device_token) && strlen($user->device_token) > 4)
             {
                 PushNotification::iOS($payload, $user->device_token);
-            }
-
-            if(isset($user->device_token) && strlen($user->device_token) > 4 && $user->device_type == 0)
-            {
-                PushNotification::android($payload, $user->device_token);
             }
         }
 
