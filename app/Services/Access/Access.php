@@ -10,6 +10,7 @@ use App\Library\Push\PushNotification;
 use App\Models\Settings\Settings;
 use App\Models\BlockUsers\BlockUsers;
 use App\Models\Messages\Messages;
+use App\Models\TempBlock\TempBlock;
 
 /**
  * Class Access.
@@ -384,6 +385,22 @@ class Access
         if($userId)
         {
             return BlockUsers::where('user_id', $userId)->pluck('block_user_id')->toArray();
+        }
+
+        return false;
+    }
+
+    /**
+     * Get User Settings
+     * 
+     * @param int $userId
+     * @return object
+     */
+    public function getMyTempBlockedUserIds($userId = null)
+    {
+        if($userId)
+        {
+            return TempBlock::where('user_id', $userId)->pluck('block_user_id')->toArray();
         }
 
         return false;

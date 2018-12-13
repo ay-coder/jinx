@@ -963,14 +963,18 @@ class UsersController extends BaseApiController
      */
     public function getUsers(Request $request)
     {
-        $userInfo   = $this->getAuthenticatedUser();
-        $settings   = access()->getUserSettings($userInfo->id);
-        $blockUserIds = access()->getMyBlockedUserIds($userInfo->id);
-        $distanceUsers = false;
-        $condition  = [];
+        $userInfo           = $this->getAuthenticatedUser();
+        $settings           = access()->getUserSettings($userInfo->id);
+        $blockUserIds       = access()->getMyBlockedUserIds($userInfo->id);
+        $tempBlockUserIds   = access()->getMyTempBlockedUserIds($userInfo->id);
+        $distanceUsers      = false;
+        $condition          = [];
+
+        $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds));
 
         if($request->has('latitude') && $request->has('longitude'))
         {
+
             $lat    = $request->get('latitude');
             $long   = $request->get('longitude');
             $distanceUsers  = DB::select("SELECT id, ( 6371 * acos( cos( radians($lat) ) * cos( radians( `latitude` ) ) * cos( radians( `longitude` ) - radians($long
@@ -990,7 +994,10 @@ class UsersController extends BaseApiController
                 'gender' => $settings->interested
             ];
         }
-        $users      = User::with('user_images')->whereNotIn('id', $blockUserIds)->where($condition)->where('id', '!=', 1)->where('id', '!=', $userInfo->id)->get();
+
+       
+
+        $users      = User::with('user_images')->whereNotIn('id', $allBlockUserIds)->where($condition)->where('id', '!=', 1)->where('id', '!=', $userInfo->id)->get();
 
         $users  = $users->filter(function($item) use($settings, $distanceUsers) 
         {
