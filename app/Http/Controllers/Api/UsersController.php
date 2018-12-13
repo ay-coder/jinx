@@ -259,6 +259,16 @@ class UsersController extends BaseApiController
                     $user->spotify_token = $request->get('spotify_token');
                 }
 
+                if($request->has('latitude'))
+                {
+                    $user->latitude = $request->get('latitude');
+                }
+
+                if($request->has('latitude'))
+                {
+                    $user->latitude = $request->get('latitude');
+                }
+
                 if($request->has('insta_token'))
                 {
                     $user->insta_token = $request->get('insta_token');

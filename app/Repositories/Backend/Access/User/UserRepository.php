@@ -418,6 +418,8 @@ class UserRepository extends BaseRepository
             'insta_token'          => isset($input['insta_token']) ? $input['insta_token']: '',
             'spotify_token'          => isset($input['spotify_token']) ? $input['spotify_token']: '',
             'city'          => isset($input['city']) ? $input['city']: '',
+            'latitude'          => isset($input['latitude']) ? $input['latitude']: '',
+            'longitude'          => isset($input['longitude']) ? $input['longitude']: '',
             'state'         => isset($input['state']) ? $input['state']: '',
             'zip'           => isset($input['zip']) ? $input['zip']: '',
             'gender'        => isset($input['gender']) ? $input['gender']: '',
