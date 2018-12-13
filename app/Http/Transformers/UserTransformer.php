@@ -261,7 +261,7 @@ class UserTransformer extends Transformer
         ]; 
     }
 
-    public function showUsersTransform($users)
+    public function showUsersTransform($users, $distanceUsers = array())
     {
         $response       = [];
         $currentUserId  = access()->user()->id;
@@ -271,7 +271,18 @@ class UserTransformer extends Transformer
             foreach($users as $user)
             {
                 $unreadCount    = access()->getUnreadUserMessageCount($user->id);
+                $distance       = 0;
                 $images         = [];
+
+                if(isset($distanceUsers ) && count($distanceUsers ))
+                {
+                    $isDistance = $distanceUsers->where('id', $user->id)->first();
+                    
+                    if(isset($isDistance))
+                    {
+                        $distance = number_format($isDistance->distance, 4);
+                    }
+                }
 
                 $images[] = [
                     'image_id'  => 0,
@@ -327,7 +338,7 @@ class UserTransformer extends Transformer
                     'spotify_token' => $this->nulltoBlank($user->spotify_token),
                     'spotify_user_id' => $this->nulltoBlank($user->spotify_user_id),
                     'insta_token'   => $this->nulltoBlank($user->insta_token),
-                    'distance'      => 10,
+                    'distance'      => $distance,
                     'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
                     'unread_count'  => $unreadCount,
                     'userImages'    => $images,

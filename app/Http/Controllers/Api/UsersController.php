@@ -1025,10 +1025,10 @@ class UsersController extends BaseApiController
         
         if(isset($settings->distance))
         {
-            $users  = $users->where('distance', '>=', $settings->distance);
+            $users  = $users->where('distance', '<=', $settings->distance);
         }
 
-        $responseData = $this->userTransformer->showUsersTransform($users);
+        $responseData = $this->userTransformer->showUsersTransform($users, $distanceUsers);
 
         return $this->successResponse($responseData);
     }
