@@ -264,9 +264,9 @@ class UsersController extends BaseApiController
                     $user->latitude = $request->get('latitude');
                 }
 
-                if($request->has('latitude'))
+                if($request->has('longitude'))
                 {
-                    $user->latitude = $request->get('latitude');
+                    $user->longitude = $request->get('longitude');
                 }
 
                 if($request->has('insta_token'))
