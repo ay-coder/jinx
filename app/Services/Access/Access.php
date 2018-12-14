@@ -344,7 +344,7 @@ class Access
     {
         if($userId)
         {
-            return FeedNotifications::where([
+            return UserNotifications::where([
                 'is_read'   => 0,
                 'user_id'   => $userId
             ])->count();
