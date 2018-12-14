@@ -478,7 +478,7 @@ class Access
     {
         if($userId)
         {
-            return UserInterests::where('user_id' => $userId)->pluck('interested_user_id')->toArray();
+            return UserInterests::where('user_id', $userId)->pluck('interested_user_id')->toArray();
         }
 
         return [];
