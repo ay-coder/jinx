@@ -202,7 +202,7 @@ class UsersController extends BaseApiController
                 'interested'        => isset($input['gender']) && $input['gender'] == 'Female' ? 'Male' : 'Female',
                 'age_start_range'   => $age - 5,
                 'age_end_range'     => $age + 5,
-                'distance'          => 5
+                'distance'          => 10
             ]);
             Auth::loginUsingId($user->id, true);
 
