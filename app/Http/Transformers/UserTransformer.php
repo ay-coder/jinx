@@ -338,7 +338,7 @@ class UserTransformer extends Transformer
                     'spotify_token' => $this->nulltoBlank($user->spotify_token),
                     'spotify_user_id' => $this->nulltoBlank($user->spotify_user_id),
                     'insta_token'   => $this->nulltoBlank($user->insta_token),
-                    'distance'      => number_format($distance, 4),
+                    'distance'      => isset($distance) ? number_format($distance, 4) : 0,
                     'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
                     'unread_count'  => $unreadCount,
                     'userImages'    => $images,
