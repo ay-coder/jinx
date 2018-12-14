@@ -12,6 +12,7 @@ use App\Models\Settings\Settings;
 use App\Models\BlockUsers\BlockUsers;
 use App\Models\Messages\Messages;
 use App\Models\TempBlock\TempBlock;
+use App\Models\UserInterests\UserInterests;
 
 /**
  * Class Access.
@@ -465,6 +466,22 @@ class Access
         }
 
         return 0;
+    }
+
+    /**
+     * Get My Roaster UserIds
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function getMyRoasterUserIds($userId = null)
+    {
+        if($userId)
+        {
+            return UserInterests::where('user_id' => $userId)->pluck('interested_user_id')->toArray();
+        }
+
+        return [];
     }
 }
 

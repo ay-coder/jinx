@@ -967,10 +967,11 @@ class UsersController extends BaseApiController
         $settings           = access()->getUserSettings($userInfo->id);
         $blockUserIds       = access()->getMyBlockedUserIds($userInfo->id);
         $tempBlockUserIds   = access()->getMyTempBlockedUserIds($userInfo->id);
+        $roasterUserIds     = access()->getMyRoasterUserIds($userInfo->id);
         $distanceUsers      = false;
         $condition          = [];
 
-        $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds));
+        $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds, $roasterUserIds));
 
         if($request->has('latitude') && $request->has('longitude'))
         {
