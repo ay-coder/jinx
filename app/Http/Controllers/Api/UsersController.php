@@ -938,6 +938,7 @@ class UsersController extends BaseApiController
     public function getRosterUsers(Request $request)
     {
         $userInfo       = $this->getAuthenticatedUser();
+        $distanceUsers  = [];
         $myInterestIds  = UserInterests::where('interested_user_id', $userInfo->id)->pluck('user_id')->toArray();
 
         $otherInterestIds = UserInterests::where('user_id', $userInfo->id)->pluck('interested_user_id')->toArray();
@@ -950,7 +951,21 @@ class UsersController extends BaseApiController
 
         $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->where('id', '!=', 1)->whereIn('id', $interestedIds)->get();
         
-        $responseData = $this->userTransformer->showUsersTransform($users);
+        if($request->has('latitude') && $request->has('longitude'))
+        {
+            $lat    = $request->get('latitude');
+            $long   = $request->get('longitude');
+            $distanceUsers  = DB::select("SELECT id, ( 6371 * acos( cos( radians($lat) ) * cos( radians( `latitude` ) ) * cos( radians( `longitude` ) - radians($long
+                    ) ) + sin( radians($lat) ) * sin( radians( `latitude` ) ) ) ) AS distance
+                FROM users
+                ORDER BY distance ASC");
+            if(isset($distanceUsers))
+            {
+                $distanceUsers = collect($distanceUsers);
+            }
+        }
+
+        $responseData = $this->userTransformer->showUsersTransform($users, $distanceUsers);
 
         return $this->successResponse($responseData);
     }
@@ -968,6 +983,7 @@ class UsersController extends BaseApiController
         $blockUserIds       = access()->getMyBlockedUserIds($userInfo->id);
         $tempBlockUserIds   = access()->getMyTempBlockedUserIds($userInfo->id);
         $roasterUserIds     = access()->getMyRoasterUserIds($userInfo->id);
+
         $distanceUsers      = false;
         $condition          = [];
 

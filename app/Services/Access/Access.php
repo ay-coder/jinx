@@ -478,7 +478,14 @@ class Access
     {
         if($userId)
         {
-            return UserInterests::where('user_id', $userId)->pluck('interested_user_id')->toArray();
+            $myInterestIds =  UserInterests::where('user_id', $userId)->pluck('interested_user_id')->toArray();
+
+            $otherInterestIds = UserInterests::where([
+                'interested_user_id' => $userId,
+                'is_accepted'        => 1
+            ])->pluck('user_id')->toArray();
+
+            return array_unique(array_merge($myInterestIds, $otherInterestIds));
         }
 
         return [];
