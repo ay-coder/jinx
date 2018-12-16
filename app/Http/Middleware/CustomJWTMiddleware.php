@@ -64,6 +64,8 @@ class CustomJWTMiddleware extends BaseJWTMiddleware
             return $this->respond('tymon.jwt.user_not_found', 'user_not_found', 404);
         }
 
+        access()->checkKitBoatMessages();
+        access()->checkTempBlockUsers();
         $this->events->fire('tymon.jwt.valid', $user);
 
         return $next($request);

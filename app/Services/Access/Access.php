@@ -13,6 +13,7 @@ use App\Models\BlockUsers\BlockUsers;
 use App\Models\Messages\Messages;
 use App\Models\TempBlock\TempBlock;
 use App\Models\UserInterests\UserInterests;
+use Carbon\Carbon;
 
 /**
  * Class Access.
@@ -489,6 +490,21 @@ class Access
         }
 
         return [];
+    }
+
+    public function checkKitBoatMessages()
+    {
+        # code...
+    }
+
+    /**
+     * Check Temp Block Users
+     *
+     * @return bool
+     */
+    public function checkTempBlockUsers()
+    {
+        return TempBlock::where('created_at', '<', Carbon::now()->subDays(1)->toDateTimeString())->delete();
     }
 }
 
