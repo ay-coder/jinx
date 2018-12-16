@@ -153,7 +153,7 @@ class APIUserInterestsController extends BaseApiController
                     
                     $notificationData3 = [
                         'title'                 => $text3,
-                        'user_id'               => 1,
+                        'user_id'               => $userTwo->id,
                         'other_user_id'         => $userOne->id,
                         'message_id'            => $message->id,
                         'notification_type'     => 'KITBOAT_MESSAGE',
@@ -162,7 +162,7 @@ class APIUserInterestsController extends BaseApiController
 
                     $notificationData4 = [
                         'title'                 => $text3,
-                        'user_id'               => 1,
+                        'user_id'               => $userOne->id,
                         'other_user_id'         => $userTwo->id,
                         'message_id'            => $message->id,
                         'notification_type'     => 'KITBOAT_MESSAGE',
