@@ -521,8 +521,8 @@ class Access
                         'badge_count'           => access()->getUnreadNotificationCount($userTwo->id)
                     ];
 
-                    access()->addNotification($notificationData);
-                    access()->sentPushNotification($userTwo, $notificationData);
+                    $this->addNotification($notificationData);
+                    $this->sentPushNotification($userTwo, $notificationData);
 
                     $text2 = 'Its been a long time '. $userTwo->name .' has heard from you.';
                     
@@ -530,12 +530,50 @@ class Access
                         'title'                 => $text2,
                         'user_id'               => $userTwo->id,
                         'other_user_id'         => $userOne->id,
-                        'notification_type'     => 'MUTUAL_LIKE',
-                        'badge_count'           => access()->getUnreadNotificationCount($userOne->id)
+                        'notification_type'     => 'KITBOAT_REMINDER_MESSAGE',
+                        'badge_count'           => $this->getUnreadNotificationCount($userOne->id)
                     ];
 
-                    access()->addNotification($notificationData2);
-                    access()->sentPushNotification($userOne, $notificationData2);
+                    $this->addNotification($notificationData2);
+                    $this->sentPushNotification($userOne, $notificationData2);
+                }
+
+                if($trackMessage->last_message_user_id == $trackMessage->user_id)
+                {
+                    $userOne = User::find($trackMessage->user_id);
+                    $userTwo = User::find($trackMessage->other_user_id);
+                    
+                    $text = $userOne->name .' is wating to hear from you.';
+                    
+                    $notificationData = [
+                        'title'                 => $text,
+                        'user_id'               => $userOne->id,
+                        'other_user_id'         => $userTwo->id,
+                        'notification_type'     => 'KITBOAT_WAITING_MESSAGE',
+                        'badge_count'           => $this->getUnreadNotificationCount($userTwo->id)
+                    ];
+
+                    $this->addNotification($notificationData);
+                    $this->sentPushNotification($userTwo, $notificationData);
+                }
+
+                if($trackMessage->last_message_user_id == $trackMessage->other_user_id)
+                {
+                    $userOne = User::find($trackMessage->other_user_id);
+                    $userTwo = User::find($trackMessage->user_id);
+                    
+                    $text = $userOne->name .' is wating to hear from you.';
+                    
+                    $notificationData = [
+                        'title'                 => $text,
+                        'user_id'               => $userOne->id,
+                        'other_user_id'         => $userTwo->id,
+                        'notification_type'     => 'KITBOAT_WAITING_MESSAGE',
+                        'badge_count'           => $this->getUnreadNotificationCount($userTwo->id)
+                    ];
+
+                    $this->addNotification($notificationData);
+                    $this->sentPushNotification($userTwo, $notificationData);
                 }
             }
         }

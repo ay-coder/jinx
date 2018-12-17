@@ -940,9 +940,13 @@ class UsersController extends BaseApiController
     {
         $userInfo       = $this->getAuthenticatedUser();
         $distanceUsers  = [];
+        $blockUserIds       = access()->getMyBlockedUserIds($userInfo->id);
+        $tempBlockUserIds   = access()->getMyTempBlockedUserIds($userInfo->id);
         $myInterestIds  = UserInterests::where('interested_user_id', $userInfo->id)->pluck('user_id')->toArray();
 
         $otherInterestIds = UserInterests::where('user_id', $userInfo->id)->pluck('interested_user_id')->toArray();
+
+        $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds, $roasterUserIds));
 
         $interestedIds = array_merge($myInterestIds, $otherInterestIds);
 
@@ -950,7 +954,7 @@ class UsersController extends BaseApiController
 
         /*$rosterUserIds  = UserInterests::where('interested_user_id', $userInfo->id)->orWhere('user_id', $userInfo->id)->pluck('user_id')->toArray();*/
 
-        $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->where('id', '!=', 1)->whereIn('id', $interestedIds)->get();
+        $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->where('id', '!=', 1)->whereNotIn('id', $allBlockUserIds)->whereIn('id', $interestedIds)->get();
         
         if($request->has('latitude') && $request->has('longitude'))
         {
