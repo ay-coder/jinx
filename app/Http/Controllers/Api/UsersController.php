@@ -970,7 +970,20 @@ class UsersController extends BaseApiController
             }
         }
 
-        $responseData = $this->userTransformer->showUsersTransform($users, $distanceUsers);
+        $finalUsers = [];
+        foreach($users as $userInfo)
+        {
+            if(!in_array($userInfo->id, $allBlockUserIds))
+            {
+                $finalUsers[] = $userInfo;
+            }
+        }
+
+        $finalUsers = (collect) $finalUsers;
+
+        
+
+        $responseData = $this->userTransformer->showUsersTransform($finalUsers, $distanceUsers);
 
         return $this->successResponse($responseData);
     }
