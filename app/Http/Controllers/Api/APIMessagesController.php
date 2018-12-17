@@ -6,6 +6,7 @@ use App\Http\Transformers\MessagesTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Access\User\User;
 use App\Repositories\Messages\EloquentMessagesRepository;
+use App\Models\TrackMessages\TrackMessages;
 
 class APIMessagesController extends BaseApiController
 {
@@ -144,6 +145,33 @@ class APIMessagesController extends BaseApiController
 
 
                 $responseData = $this->messagesTransformer->singleMessageTranform($model);
+
+                $isExist = TrackMessages::where([
+                    'user_id'               => $userInfo->id,
+                    'other_user_id'         => $otherUser->id
+                ])->orWhere([
+                    'other_user_id'   => $userInfo->id,
+                    'user_id'         => $otherUser->id
+                ])->first();
+
+                if(isset($isExist))
+                {
+                    $isExist->last_message_user_id      = $userInfo->id;
+                    $isExist->is_admin                  = 0;
+                    $isExist->last_message_created_at   = date('Y-m-d H:i:s');
+                    $isExist->save();
+                }
+                else
+                {
+                    TrackMessages::create([
+                        'user_id'                   => $userInfo->id,
+                        'other_user_id'             => $request->get('other_user_id'),
+                        'is_admin'                  => 0,
+                        'last_message_user_id'      => $userInfo->id,
+                        'last_message_created_at'   => date('Y-m-d H:i:s')
+                    ]);
+                }
+
                 return $this->successResponse($responseData);
             }
         }

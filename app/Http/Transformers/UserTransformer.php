@@ -357,7 +357,7 @@ class UserTransformer extends Transformer
      * @param object $user
      * @return array
      */
-    public function showSingleUserTransform($user)
+    public function showSingleUserTransform($user, $distanceUsers = null)
     {
         if(isset($user))
         {
@@ -368,6 +368,19 @@ class UserTransformer extends Transformer
 
             $userInstaImages    = [];
             $userSpotifyImages  = [];
+
+
+            $distance       = 0;
+            
+            if(isset($distanceUsers ) && count($distanceUsers ))
+            {
+                $isDistance = $distanceUsers->where('id', $user->id)->first();
+                
+                if(isset($isDistance))
+                {
+                    $distance = number_format($isDistance->distance, 4);
+                }
+            }
 
             if(isset($user->social_images) && count($user->social_images))
             {
@@ -415,7 +428,7 @@ class UserTransformer extends Transformer
                 'spotify_token' => $this->nulltoBlank($user->spotify_token),
                 'spotify_user_id' => $this->nulltoBlank($user->spotify_user_id),
                 'insta_token'   => $this->nulltoBlank($user->insta_token),
-                'distance'      => 10,
+                'distance'      => $distance,
                 'address'       => $this->nulltoBlank($user->address) . ' '.$this->nulltoBlank($user->city),
                 'userImages'    => $images,
                 'insta_images'  => $userInstaImages,

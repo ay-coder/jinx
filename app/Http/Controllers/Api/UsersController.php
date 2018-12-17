@@ -1068,7 +1068,23 @@ class UsersController extends BaseApiController
         if($request->has('user_id'))
         {
             $user = User::with('user_images')->where('id', $request->get('user_id'))->first();
-            $responseData = $this->userTransformer->showSingleUserTransform($user);
+            $distanceUsers = [];
+
+            if($request->has('latitude') && $request->has('longitude'))
+            {
+                $lat    = $request->get('latitude');
+                $long   = $request->get('longitude');
+                $distanceUsers  = DB::select("SELECT id, ( 6371 * acos( cos( radians($lat) ) * cos( radians( `latitude` ) ) * cos( radians( `longitude` ) - radians($long
+                        ) ) + sin( radians($lat) ) * sin( radians( `latitude` ) ) ) ) AS distance
+                    FROM users
+                    ORDER BY distance ASC");
+                if(isset($distanceUsers))
+                {
+                    $distanceUsers = collect($distanceUsers);
+                }
+            }
+
+            $responseData = $this->userTransformer->showSingleUserTransform($user, $distanceUsers);
 
             return $this->successResponse($responseData);
         }
