@@ -303,6 +303,7 @@ class UsersController extends BaseApiController
     {
         $successResponse = [
             'support_number'        => '99999999',
+            'kitboat_profile_pic'   => URL::to('/').'/uploads/user/chat-boat-picture.png',
             'app_url'               => route('frontend.privacy-policy'),
             'rateus_url'            => route('frontend.privacy-policy'),
             'privacy_policy_url'    => route('frontend.privacy-policy'),

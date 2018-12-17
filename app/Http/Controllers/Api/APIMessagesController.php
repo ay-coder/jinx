@@ -90,7 +90,6 @@ class APIMessagesController extends BaseApiController
                     }
                 }
 
-
                 // Set Read Message
                 if(count($readMessageIds))
                 {
