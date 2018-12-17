@@ -942,9 +942,15 @@ class UsersController extends BaseApiController
         $distanceUsers  = [];
         $blockUserIds       = access()->getMyBlockedUserIds($userInfo->id);
         $tempBlockUserIds   = access()->getMyTempBlockedUserIds($userInfo->id);
-        $myInterestIds  = UserInterests::where('interested_user_id', $userInfo->id)->pluck('user_id')->toArray();
+        $myInterestIds  = UserInterests::where([
+            'interested_user_id' => $userInfo->id,
+            'is_accepted' => 1
+        ])->pluck('user_id')->toArray();
 
-        $otherInterestIds = UserInterests::where('user_id', $userInfo->id)->pluck('interested_user_id')->toArray();
+        $otherInterestIds = UserInterests::where([
+            'user_id' =>  $userInfo->id,
+            
+        ])->pluck('interested_user_id')->toArray();
 
         $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds));
 
@@ -979,7 +985,7 @@ class UsersController extends BaseApiController
             }
         }
 
-        $finalUsers = (collect) $finalUsers;
+        $finalUsers = collect($finalUsers);
 
         
 
