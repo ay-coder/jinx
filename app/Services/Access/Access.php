@@ -14,6 +14,7 @@ use App\Models\Messages\Messages;
 use App\Models\TempBlock\TempBlock;
 use App\Models\UserInterests\UserInterests;
 use Carbon\Carbon;
+use App\Models\TrackMessages\TrackMessages;
 
 /**
  * Class Access.
@@ -492,9 +493,52 @@ class Access
         return [];
     }
 
+    /**
+     * Check Kit Boat Messages
+     * 
+     * @return true
+     */
     public function checkKitBoatMessages()
     {
-        # code...
+        $trackMessages = TrackMessages::where('last_message_created_at', '<', Carbon::now()->subDays(1)->toDateTimeString())->get();
+
+        if(isset($trackMessages) && count($trackMessages))
+        {
+            foreach($trackMessages as $trackMessage)
+            {
+                if($trackMessage->is_admin == 1)
+                {
+                    $userOne = User::find($trackMessage->user_id);
+                    $userTwo = User::find($trackMessage->other_user_id);
+                    
+                    $text = 'Its been a long time '. $userOne->name .' has heard from you.';
+                    
+                    $notificationData = [
+                        'title'                 => $text,
+                        'user_id'               => $userOne->id,
+                        'other_user_id'         => $userTwo->id,
+                        'notification_type'     => 'KITBOAT_REMINDER_MESSAGE',
+                        'badge_count'           => access()->getUnreadNotificationCount($userTwo->id)
+                    ];
+
+                    access()->addNotification($notificationData);
+                    access()->sentPushNotification($userTwo, $notificationData);
+
+                    $text2 = 'Its been a long time '. $userTwo->name .' has heard from you.';
+                    
+                    $notificationData2 = [
+                        'title'                 => $text2,
+                        'user_id'               => $userTwo->id,
+                        'other_user_id'         => $userOne->id,
+                        'notification_type'     => 'MUTUAL_LIKE',
+                        'badge_count'           => access()->getUnreadNotificationCount($userOne->id)
+                    ];
+
+                    access()->addNotification($notificationData2);
+                    access()->sentPushNotification($userOne, $notificationData2);
+                }
+            }
+        }
     }
 
     /**
