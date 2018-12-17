@@ -15,6 +15,7 @@ use App\Models\TempBlock\TempBlock;
 use App\Models\UserInterests\UserInterests;
 use Carbon\Carbon;
 use App\Models\TrackMessages\TrackMessages;
+use App\Models\Access\User\User;
 
 /**
  * Class Access.
@@ -502,6 +503,9 @@ class Access
     {
         $trackMessages = TrackMessages::where('last_message_created_at', '<', Carbon::now()->subDays(1)->toDateTimeString())->get();
 
+        // Try with Every Messages
+        //$trackMessages = TrackMessages::get();
+
         if(isset($trackMessages) && count($trackMessages))
         {
             foreach($trackMessages as $trackMessage)
@@ -512,11 +516,20 @@ class Access
                     $userTwo = User::find($trackMessage->other_user_id);
                     
                     $text = 'Its been a long time '. $userOne->name .' has heard from you.';
+
+                    $messageOne = Messages::create([
+                        'user_id'       => $userOne->id,
+                        'is_admin'      => 1,
+                        'other_user_id' => $userTwo->id,
+                        'message'       => $text
+                    ]);
+
                     
                     $notificationData = [
                         'title'                 => $text,
                         'user_id'               => $userOne->id,
                         'other_user_id'         => $userTwo->id,
+                        'message_id'            => $messageOne->id,
                         'notification_type'     => 'KITBOAT_REMINDER_MESSAGE',
                         'badge_count'           => access()->getUnreadNotificationCount($userTwo->id)
                     ];
@@ -526,8 +539,16 @@ class Access
 
                     $text2 = 'Its been a long time '. $userTwo->name .' has heard from you.';
                     
+                    $messageTwo = Messages::create([
+                        'user_id'       => $userTwo->id,
+                        'is_admin'      => 1,
+                        'other_user_id' => $userOne->id,
+                        'message'       => $text2
+                    ]);
+
                     $notificationData2 = [
                         'title'                 => $text2,
+                        'message_id'            => $messageTwo->id,
                         'user_id'               => $userTwo->id,
                         'other_user_id'         => $userOne->id,
                         'notification_type'     => 'KITBOAT_REMINDER_MESSAGE',
@@ -536,6 +557,8 @@ class Access
 
                     $this->addNotification($notificationData2);
                     $this->sentPushNotification($userOne, $notificationData2);
+
+                    continue;
                 }
 
                 if($trackMessage->last_message_user_id == $trackMessage->user_id)
@@ -544,17 +567,27 @@ class Access
                     $userTwo = User::find($trackMessage->other_user_id);
                     
                     $text = $userOne->name .' is wating to hear from you.';
+
+                    $message = Messages::create([
+                        'user_id'       => $userOne->id,
+                        'is_admin'      => 1,
+                        'other_user_id' => $userTwo->id,
+                        'message'       => $text
+                    ]);
                     
                     $notificationData = [
                         'title'                 => $text,
                         'user_id'               => $userOne->id,
                         'other_user_id'         => $userTwo->id,
+                        'message_id'            => $message->id,
                         'notification_type'     => 'KITBOAT_WAITING_MESSAGE',
                         'badge_count'           => $this->getUnreadNotificationCount($userTwo->id)
                     ];
 
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
+
+                    continue;
                 }
 
                 if($trackMessage->last_message_user_id == $trackMessage->other_user_id)
@@ -563,17 +596,27 @@ class Access
                     $userTwo = User::find($trackMessage->user_id);
                     
                     $text = $userOne->name .' is wating to hear from you.';
+
+                    $message = Messages::create([
+                        'user_id'       => $userOne->id,
+                        'is_admin'      => 1,
+                        'other_user_id' => $userTwo->id,
+                        'message'       => $text
+                    ]);
                     
                     $notificationData = [
                         'title'                 => $text,
                         'user_id'               => $userOne->id,
                         'other_user_id'         => $userTwo->id,
+                        'message_id'            => $message->id,
                         'notification_type'     => 'KITBOAT_WAITING_MESSAGE',
                         'badge_count'           => $this->getUnreadNotificationCount($userTwo->id)
                     ];
 
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
+
+                    continue;
                 }
             }
         }

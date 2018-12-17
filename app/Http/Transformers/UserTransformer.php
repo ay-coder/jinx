@@ -270,7 +270,7 @@ class UserTransformer extends Transformer
         {
             foreach($users as $user)
             {
-                $unreadCount    = access()->getUnreadUserMessageCount($user->id);
+                $unreadCount    = access()->getUnreadMessageCount($user->id, $currentUserId);
                 $distance       = 0;
                 $images         = [];
 

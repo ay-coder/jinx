@@ -9,6 +9,7 @@ use App\Models\UserInterests\UserInterests;
 use App\Models\ChatBoat\ChatBoat;
 use App\Models\Messages\Messages;
 use App\Models\Access\User\User;
+use App\Models\TrackMessages\TrackMessages;
 
 class APIUserInterestsController extends BaseApiController
 {
@@ -148,6 +149,32 @@ class APIUserInterestsController extends BaseApiController
                         'other_user_id' => $request->get('interested_user_id'),
                         'message'       => "Let's Talk "
                     ]);
+
+                    $isExist = TrackMessages::where([
+                        'user_id'               => $userInfo->id,
+                        'other_user_id'         => $request->get('interested_user_id')
+                    ])->orWhere([
+                        'other_user_id'   => $request->get('interested_user_id'),
+                        'user_id'         => $userInfo->id
+                    ])->first();
+
+                    if(isset($isExist))
+                    {
+                        $isExist->last_message_user_id      = $userInfo->id;
+                        $isExist->is_admin                  = 1;
+                        $isExist->last_message_created_at   = date('Y-m-d H:i:s');
+                        $isExist->save();
+                    }
+                    else
+                    {
+                        TrackMessages::create([
+                            'user_id'                   => $userInfo->id,
+                            'other_user_id'             => $request->get('interested_user_id'),
+                            'is_admin'                  => 1,
+                            'last_message_user_id'      => $userInfo->id,
+                            'last_message_created_at'   => date('Y-m-d H:i:s')
+                        ]);
+                    }
                     
                     $text3 = 'Kitbot has sent you a message.';
                     

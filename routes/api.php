@@ -68,6 +68,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'jwt.customauth'], function 
 
     Route::post('change-password', 'UsersController@changePassword')->name('api.change-password');
 
+    Route::any('delete-account', 'UsersController@deleteUserAccount')->name('api.delete-account');
+
     Route::any('logout', 'UsersController@logout')->name('api.logout');
 });
 

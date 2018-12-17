@@ -72,6 +72,12 @@ class CustomJWTMiddleware extends BaseJWTMiddleware
 
         $this->events->fire('tymon.jwt.valid', $user);
 
+        // Check for KitBoat Message
+        access()->checkKitBoatMessages();
+
+        // Check for Temp Block Users
+        access()->checkTempBlockUsers();
+
         return $next($request);
     }
 }

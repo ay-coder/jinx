@@ -30,6 +30,10 @@ use App\Models\Images\Images;
 use App\Models\UserInterests\UserInterests;
 use App\Models\BlockUsers\BlockUsers;
 use App\Models\SocialImages\SocialImages;
+use App\Models\Messages\Messages;
+use App\Models\UserNotifications\UserNotifications;
+use App\Models\TempBlock\TempBlock;
+use App\Models\TrackMessages\TrackMessages;
 
 class UsersController extends BaseApiController
 {
@@ -1307,5 +1311,54 @@ class UsersController extends BaseApiController
         'message'   => 'No User Found for given details',
         'status'    => false,
         ], 200);
+    }
+
+    /**
+     * Delete User Account
+     *
+     * @param  Request $request [description]
+     * @return json
+     */
+    public function deleteUserAccount(Request $request)
+    {
+        $userInfo = $this->getAuthenticatedUser();        
+        
+        Messages::where([
+            'user_id' => $userInfo->id
+        ])->orWhere([
+            'other_user_id' => $userInfo->id
+        ])->delete();
+
+        UserNotifications::where([
+            'user_id' => $userInfo->id
+        ])->orWhere([
+            'other_user_id' => $userInfo->id
+        ])->delete();
+
+        TempBlock::where([
+            'user_id' => $userInfo->id
+        ])->orWhere([
+            'block_user_id' => $userInfo->id
+        ])->delete();
+
+        TrackMessages::where([
+            'user_id' => $userInfo->id
+        ])->orWhere([
+            'other_user_id' => $userInfo->id
+        ])->delete();
+
+        UserInterests::where([
+            'user_id' => $userInfo->id
+        ])->orWhere([
+            'interested_user_id' => $userInfo->id
+        ])->delete();
+
+        User::where('id', $userInfo->id)->delete();
+
+        $responseData = [
+            'message' => 'User account deleted Successfully.'
+        ];
+        
+        return $this->successResponse($responseData, 'User account deleted Successfully.');
     }
 }
