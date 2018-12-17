@@ -26,6 +26,9 @@ class CustomJWTMiddleware extends BaseJWTMiddleware
      */
     public function handle($request, \Closure $next)
     {
+        $invalidTokenCode = 200;
+        $invalidDataCode  = 999;
+
         if (! $token = $this->auth->setRequest($request)->getToken()) {
             return $this->respond('tymon.jwt.absent', 'token_not_provided', 400);
         }
@@ -35,23 +38,26 @@ class CustomJWTMiddleware extends BaseJWTMiddleware
             $user = $this->auth->authenticate($token);
         } catch (TokenExpiredException $e) 
         {
-            $respond = [
-                'success'   => false,
-                'message'   => 'Token Expired - Need to Regenerate Token'
-            ];
-
-            return $this->respond('tymon.jwt.expired', $respond, $e->getStatusCode(), [$e]);
-        } catch (JWTException $e)
-        {
-            $invalidTokenCode = 200;
-            $invalidDataCode  = 999;
-            $respond = [
+            $response = [
                 'success'   => false,
                 'status'    => false,
                 'code'      => $invalidDataCode,
-                'message'   => 'Invalid Token - Wrong Token !'
+                'message'   => "Session Expired!"
             ];
-            return $this->respond('tymon.jwt.invalid', $respond, $invalidTokenCode, [$e]);
+            return response()->json(
+                $response, 200
+            );
+        } catch (JWTException $e)
+        {
+            $response = [
+                'success'   => false,
+                'status'    => false,
+                'code'      => $invalidDataCode,
+                'message'   => "Session Expired!"
+            ];
+            return response()->json(
+                $response, 200
+            );
         }
 
         if (! $user)
@@ -64,8 +70,6 @@ class CustomJWTMiddleware extends BaseJWTMiddleware
             return $this->respond('tymon.jwt.user_not_found', 'user_not_found', 404);
         }
 
-        access()->checkKitBoatMessages();
-        access()->checkTempBlockUsers();
         $this->events->fire('tymon.jwt.valid', $user);
 
         return $next($request);
