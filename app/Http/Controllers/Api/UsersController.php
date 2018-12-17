@@ -946,7 +946,7 @@ class UsersController extends BaseApiController
 
         $otherInterestIds = UserInterests::where('user_id', $userInfo->id)->pluck('interested_user_id')->toArray();
 
-        $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds, $roasterUserIds));
+        $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds));
 
         $interestedIds = array_merge($myInterestIds, $otherInterestIds);
 
