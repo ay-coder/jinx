@@ -1353,7 +1353,7 @@ class UsersController extends BaseApiController
             'interested_user_id' => $userInfo->id
         ])->delete();
 
-        User::where('id', $userInfo->id)->delete();
+        User::where('id', $userInfo->id)->forceDelete();
 
         $responseData = [
             'message' => 'User account deleted Successfully.'
