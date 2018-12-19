@@ -443,11 +443,28 @@ class Access
     {
         if($userId && $otherUserId)
         {
-            return Messages::where([
+            $messages = Messages::where([
                 'is_read'       => 0,
                 'other_user_id' => $otherUserId,
                 'user_id'       => $userId
-            ])->count();
+            ])->get();
+
+            $additionalCount = 0;
+
+            if($messages)
+            {
+                foreach($messages as $message)
+                {
+                    if($message->is_admin == 1 && $message->user_id == $otherUserId)   
+                    {
+                        $additionalCount++;
+                    }
+                }
+
+                $totalCount = count($messages) + $additionalCount;
+                return $totalCount;
+            }
+
         }
 
         return 0;
