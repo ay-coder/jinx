@@ -16,6 +16,7 @@ use App\Models\UserInterests\UserInterests;
 use Carbon\Carbon;
 use App\Models\TrackMessages\TrackMessages;
 use App\Models\Access\User\User;
+use App\Models\Images\Images;
 
 /**
  * Class Access.
@@ -630,6 +631,16 @@ class Access
     public function checkTempBlockUsers()
     {
         return TempBlock::where('created_at', '<', Carbon::now()->subDays(1)->toDateTimeString())->delete();
+    }
+
+    public function getUserImages($userId = null)
+    {
+        if($userId)
+        {
+            return Images::where('user_id', $userId)->get();
+        }
+
+        return [];
     }
 }
 

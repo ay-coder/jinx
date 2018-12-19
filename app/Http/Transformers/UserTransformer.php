@@ -38,6 +38,10 @@ class UserTransformer extends Transformer
             }
         }
 
+        $user = (object) $data;
+
+        $images = access()->getUserImages($data->id);
+
         if(isset($images))
         {
             foreach($images as $image)   
