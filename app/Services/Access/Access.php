@@ -445,8 +445,8 @@ class Access
         {
             return Messages::where([
                 'is_read'       => 0,
-                'other_user_id' => $userId,
-                'user_id'       => $otherUserId
+                'other_user_id' => $otherUserId,
+                'user_id'       => $userId
             ])->count();
         }
 
