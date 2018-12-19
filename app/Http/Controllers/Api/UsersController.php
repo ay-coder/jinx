@@ -981,7 +981,7 @@ class UsersController extends BaseApiController
         $finalUsers = [];
         foreach($users as $userData)
         {
-            if(!in_array($userData->id, $allBlockUserIds) && !in_array(userData->id, $interestedIds))
+            if(!in_array($userData->id, $allBlockUserIds) && !in_array($userData->id, $interestedIds))
             {
                 $finalUsers[] = $userData;
             }
