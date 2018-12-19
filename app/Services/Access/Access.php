@@ -642,6 +642,22 @@ class Access
 
         return [];
     }
+
+    public function getRoasterIds($userId = null)
+    {
+        if($userId)
+        {
+            $myInterests    = UserInterests::where('user_id', $userId)->get();
+            $otherInterests = UserInterests::where('interested_user_id', $userId)->get();
+
+            $intIds = $myInterests->pluck('interested_user_id')->toArray();
+            $otherInterests = UserInterests::whereIn('user_id', $intIds)->where('interested_user_id', $userId)->pluck('interested_user_id')->toArray();
+
+            dd($otherInterests);
+        }
+
+        return [];
+    }
 }
 
 

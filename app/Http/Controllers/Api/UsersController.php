@@ -955,14 +955,15 @@ class UsersController extends BaseApiController
         ])->pluck('interested_user_id')->toArray();
 
         $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds));
+        $getRoasterIds   = access()->getRoasterIds($userInfo->id);
 
-        $interestedIds = array_merge($myInterestIds, $otherInterestIds);
+        //$interestedIds = array_merge($myInterestIds, $otherInterestIds);
 
-        $interestedIds = array_unique($interestedIds);
+        //$interestedIds = array_unique($interestedIds);
 
         /*$rosterUserIds  = UserInterests::where('interested_user_id', $userInfo->id)->orWhere('user_id', $userInfo->id)->pluck('user_id')->toArray();*/
 
-        $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->where('id', '!=', 1)->whereNotIn('id', $allBlockUserIds)->whereIn('id', $interestedIds)->get();
+        $users          = User::with('user_images')->where('id', '!=', $userInfo->id)->where('id', '!=', 1)->whereNotIn('id', $allBlockUserIds)->whereIn('id', $getRoasterIds)->get();
         
         if($request->has('latitude') && $request->has('longitude'))
         {
@@ -978,7 +979,7 @@ class UsersController extends BaseApiController
             }
         }
 
-        $finalUsers = [];
+        $finalUsers = [];   
         foreach($users as $userData)
         {
             if(!in_array($userData->id, $allBlockUserIds) && !in_array($userData->id, $interestedIds))
