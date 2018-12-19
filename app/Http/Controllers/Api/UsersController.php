@@ -952,7 +952,6 @@ class UsersController extends BaseApiController
 
         $otherInterestIds = UserInterests::where([
             'user_id' =>  $userInfo->id,
-            
         ])->pluck('interested_user_id')->toArray();
 
         $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds));
@@ -980,11 +979,11 @@ class UsersController extends BaseApiController
         }
 
         $finalUsers = [];
-        foreach($users as $userInfo)
+        foreach($users as $userData)
         {
-            if(!in_array($userInfo->id, $allBlockUserIds))
+            if(!in_array($userData->id, $allBlockUserIds) && !in_array(userData->id, $interestedIds))
             {
-                $finalUsers[] = $userInfo;
+                $finalUsers[] = $userData;
             }
         }
 
