@@ -948,7 +948,6 @@ class UsersController extends BaseApiController
         $tempBlockUserIds   = access()->getMyTempBlockedUserIds($userInfo->id);
         $myInterestIds  = UserInterests::where([
             'interested_user_id' => $userInfo->id,
-            'is_accepted' => 1
         ])->pluck('user_id')->toArray();
 
         $otherInterestIds = UserInterests::where([
