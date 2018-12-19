@@ -648,16 +648,17 @@ class Access
         if($userId)
         {
             $myInterests    = UserInterests::where('user_id', $userId)->get();
-            $otherInterests = UserInterests::where('interested_user_id', $userId)->get();
 
-            $intIds = $myInterests->pluck('interested_user_id')->toArray();
-            $otherInterests = UserInterests::whereIn('user_id', $intIds)->where('interested_user_id', $userId)->pluck('interested_user_id')->toArray();
+            $myIntIds = $myInterests->pluck('interested_user_id')->toArray();
+    
+            $mutualInt = UserInterests::whereIn('user_id', $myIntIds)->where('interested_user_id', $userId)->get();
 
-            dd($otherInterests);
+            return $mutualInt->pluck('user_id')->toArray();
         }
 
         return [];
     }
 }
+
 
 

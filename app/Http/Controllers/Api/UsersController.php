@@ -957,6 +957,7 @@ class UsersController extends BaseApiController
         $allBlockUserIds = array_unique(array_merge($blockUserIds, $tempBlockUserIds));
         $getRoasterIds   = access()->getRoasterIds($userInfo->id);
 
+
         //$interestedIds = array_merge($myInterestIds, $otherInterestIds);
 
         //$interestedIds = array_unique($interestedIds);
@@ -982,7 +983,7 @@ class UsersController extends BaseApiController
         $finalUsers = [];   
         foreach($users as $userData)
         {
-            if(!in_array($userData->id, $allBlockUserIds) && !in_array($userData->id, $interestedIds))
+            if(!in_array($userData->id, $allBlockUserIds))
             {
                 $finalUsers[] = $userData;
             }
