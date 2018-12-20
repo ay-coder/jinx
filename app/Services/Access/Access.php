@@ -580,7 +580,7 @@ class Access
                     $this->addNotification($notificationData2);
                     $this->sentPushNotification($userOne, $notificationData2);
 
-                    $deleteTrackMsgIds[] = $trackMessage->id;
+                    $trackMessage->delete();
                     continue;
                 }
 
@@ -589,7 +589,7 @@ class Access
                     $userOne = User::find($trackMessage->user_id);
                     $userTwo = User::find($trackMessage->other_user_id);
                     
-                    $text = $userOne->name .' is wating to hear from you.';
+                    $text = $userOne->name .' is waiting to hear from you.';
 
                     $message = Messages::create([
                         'user_id'       => $userOne->id,
@@ -616,7 +616,7 @@ class Access
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
 
-                    $deleteTrackMsgIds[] = $trackMessage->id;
+                    $trackMessage->delete();
                     continue;
                 }
 
@@ -625,7 +625,7 @@ class Access
                     $userOne = User::find($trackMessage->other_user_id);
                     $userTwo = User::find($trackMessage->user_id);
                     
-                    $text = $userOne->name .' is wating to hear from you.';
+                    $text = $userOne->name .' is waiting to hear from you.';
 
                     $message = Messages::create([
                         'user_id'       => $userOne->id,
@@ -652,7 +652,7 @@ class Access
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
 
-                    $deleteTrackMsgIds[] = $trackMessage->id;
+                    $trackMessage->delete();
                     continue;
                 }
             }
