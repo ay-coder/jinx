@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Access\User\User;
 use App\Repositories\Messages\EloquentMessagesRepository;
 use App\Models\TrackMessages\TrackMessages;
+use App\Models\AdminMessages\AdminMessages;
 
 class APIMessagesController extends BaseApiController
 {
@@ -145,6 +146,7 @@ class APIMessagesController extends BaseApiController
 
                 $responseData = $this->messagesTransformer->singleMessageTranform($model);
 
+
                 $isExist = TrackMessages::where([
                     'user_id'               => $userInfo->id,
                     'other_user_id'         => $otherUser->id
@@ -170,6 +172,11 @@ class APIMessagesController extends BaseApiController
                         'last_message_created_at'   => date('Y-m-d H:i:s')
                     ]);
                 }
+
+                AdminMessages::where([
+                    'user_id'       => $userInfo->id,
+                    'other_user_id' => $request->get('other_user_id')
+                ])->delete();
 
                 return $this->successResponse($responseData);
             }
