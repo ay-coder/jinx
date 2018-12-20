@@ -91,6 +91,11 @@ class APIMessagesController extends BaseApiController
                     }
                 }
 
+                AdminMessages::where([
+                    'user_id'       => $userInfo->id,
+                    'other_user_id' => $request->get('other_user_id')
+                ])->delete();
+
                 // Set Read Message
                 if(count($readMessageIds))
                 {
