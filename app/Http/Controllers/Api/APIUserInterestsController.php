@@ -10,6 +10,7 @@ use App\Models\ChatBoat\ChatBoat;
 use App\Models\Messages\Messages;
 use App\Models\Access\User\User;
 use App\Models\TrackMessages\TrackMessages;
+use App\Models\AdminMessages\AdminMessages;
 
 class APIUserInterestsController extends BaseApiController
 {
@@ -148,6 +149,12 @@ class APIUserInterestsController extends BaseApiController
                         'is_admin'      => 1,
                         'other_user_id' => $request->get('interested_user_id'),
                         'message'       => "Let's Talk "
+                    ]);
+
+                    AdminMessages::create([
+                        'user_id'       => $userInfo->id,
+                        'other_user_id' => $request->get('interested_user_id'),
+                        'message_id'    => $message->id
                     ]);
 
                     $isExist = TrackMessages::where([

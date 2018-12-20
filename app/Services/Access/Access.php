@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use App\Models\TrackMessages\TrackMessages;
 use App\Models\Access\User\User;
 use App\Models\Images\Images;
+use App\Models\AdminMessages\AdminMessages;
 
 /**
  * Class Access.
@@ -443,11 +444,18 @@ class Access
     {
         if($userId && $otherUserId)
         {
-            return Messages::where([
+            $messageUnreadCount = Messages::where([
                 'is_read'       => 0,
                 'other_user_id' => $otherUserId,
                 'user_id'       => $userId
             ])->count();
+
+            $adminUnreadCount = AdminMessages::where([
+                'other_user_id' => $user_id,
+                'user_id'       => $otherUserId
+            ])->count();
+
+            return $adminUnreadCount + $messageUnreadCount;
         }
 
         return 0;
@@ -525,6 +533,11 @@ class Access
                         'message'       => $text
                     ]);
 
+                    AdminMessages::create([
+                        'user_id'       => $userOne->id,
+                        'other_user_id' => $userTwo->id,
+                        'message_id'    => $messageOne->id
+                    ]);
                     
                     $notificationData = [
                         'title'                 => $text,
@@ -545,6 +558,12 @@ class Access
                         'is_admin'      => 1,
                         'other_user_id' => $userOne->id,
                         'message'       => $text2
+                    ]);
+
+                    AdminMessages::create([
+                        'user_id'       => $userTwo->id,
+                        'other_user_id' => $userOne->id,
+                        'message_id'    => $messageTwo->id
                     ]);
 
                     $notificationData2 = [
@@ -575,6 +594,12 @@ class Access
                         'other_user_id' => $userTwo->id,
                         'message'       => $text
                     ]);
+
+                    AdminMessages::create([
+                        'user_id'       => $userOne->id,
+                        'other_user_id' => $userTwo->id,
+                        'message_id'    => $message->id
+                    ]);
                     
                     $notificationData = [
                         'title'                 => $text,
@@ -603,6 +628,12 @@ class Access
                         'is_admin'      => 1,
                         'other_user_id' => $userTwo->id,
                         'message'       => $text
+                    ]);
+
+                    AdminMessages::create([
+                        'user_id'       => $userOne->id,
+                        'other_user_id' => $userTwo->id,
+                        'message_id'    => $message->id
                     ]);
                     
                     $notificationData = [

@@ -1,32 +1,30 @@
-<?php namespace App\Repositories\Messages;
+<?php namespace App\Repositories\AdminMessages;
 
 /**
- * Class EloquentMessagesRepository
+ * Class EloquentAdminMessagesRepository
  *
  * @author Anuj Jaha ( er.anujjaha@gmail.com)
  */
 
-use App\Models\Messages\Messages;
+use App\Models\AdminMessages\AdminMessages;
 use App\Repositories\DbRepository;
 use App\Exceptions\GeneralException;
-use App\Models\ChatBoat\ChatBoat;
-use App\Models\AdminMessages\AdminMessages;
 
-class EloquentMessagesRepository extends DbRepository
+class EloquentAdminMessagesRepository extends DbRepository
 {
     /**
-     * Messages Model
+     * AdminMessages Model
      *
      * @var Object
      */
     public $model;
 
     /**
-     * Messages Title
+     * AdminMessages Title
      *
      * @var string
      */
-    public $moduleTitle = 'Messages';
+    public $moduleTitle = 'AdminMessages';
 
     /**
      * Table Headers
@@ -36,9 +34,7 @@ class EloquentMessagesRepository extends DbRepository
     public $tableHeaders = [
         'id'        => 'Id',
 'user_id'        => 'User_id',
-'other_user_id'        => 'Other_user_id',
-'message'        => 'Message',
-'is_read'        => 'Is_read',
+'message_id'        => 'Message_id',
 'created_at'        => 'Created_at',
 'updated_at'        => 'Updated_at',
 "actions"         => "Actions"
@@ -62,21 +58,9 @@ class EloquentMessagesRepository extends DbRepository
                 'searchable'    => true,
                 'sortable'      => true
             ],
-		'other_user_id' =>   [
-                'data'          => 'other_user_id',
-                'name'          => 'other_user_id',
-                'searchable'    => true,
-                'sortable'      => true
-            ],
-		'message' =>   [
-                'data'          => 'message',
-                'name'          => 'message',
-                'searchable'    => true,
-                'sortable'      => true
-            ],
-		'is_read' =>   [
-                'data'          => 'is_read',
-                'name'          => 'is_read',
+		'message_id' =>   [
+                'data'          => 'message_id',
+                'name'          => 'message_id',
                 'searchable'    => true,
                 'sortable'      => true
             ],
@@ -141,13 +125,13 @@ class EloquentMessagesRepository extends DbRepository
      * @var array
      */
     public $moduleRoutes = [
-        'listRoute'     => 'messages.index',
-        'createRoute'   => 'messages.create',
-        'storeRoute'    => 'messages.store',
-        'editRoute'     => 'messages.edit',
-        'updateRoute'   => 'messages.update',
-        'deleteRoute'   => 'messages.destroy',
-        'dataRoute'     => 'messages.get-list-data'
+        'listRoute'     => 'adminmessages.index',
+        'createRoute'   => 'adminmessages.create',
+        'storeRoute'    => 'adminmessages.store',
+        'editRoute'     => 'adminmessages.edit',
+        'updateRoute'   => 'adminmessages.update',
+        'deleteRoute'   => 'adminmessages.destroy',
+        'dataRoute'     => 'adminmessages.get-list-data'
     ];
 
     /**
@@ -156,10 +140,10 @@ class EloquentMessagesRepository extends DbRepository
      * @var array
      */
     public $moduleViews = [
-        'listView'      => 'messages.index',
-        'createView'    => 'messages.create',
-        'editView'      => 'messages.edit',
-        'deleteView'    => 'messages.destroy',
+        'listView'      => 'adminmessages.index',
+        'createView'    => 'adminmessages.create',
+        'editView'      => 'adminmessages.edit',
+        'deleteView'    => 'adminmessages.destroy',
     ];
 
     /**
@@ -168,22 +152,30 @@ class EloquentMessagesRepository extends DbRepository
      */
     public function __construct()
     {
-        $this->model = new Messages;
+        $this->model = new AdminMessages;
     }
 
     /**
-     * Create Messages
+     * Create AdminMessages
      *
      * @param array $input
      * @return mixed
      */
     public function create($input)
     {
-        
+        $input = $this->prepareInputData($input, true);
+        $model = $this->model->create($input);
+
+        if($model)
+        {
+            return $model;
+        }
+
+        return false;
     }
 
     /**
-     * Update Messages
+     * Update AdminMessages
      *
      * @param int $id
      * @param array $input
@@ -204,7 +196,7 @@ class EloquentMessagesRepository extends DbRepository
     }
 
     /**
-     * Destroy Messages
+     * Destroy AdminMessages
      *
      * @param int $id
      * @return mixed
@@ -336,103 +328,4 @@ class EloquentMessagesRepository extends DbRepository
 
         return json_encode($this->setTableStructure($clientColumns));
     }
-
-
-    
-    /**
-     * Get All User Messages
-     * 
-     * @var int
-     */
-    public function getAllUserMessages($userId = null)
-    {
-        if($userId)
-        {
-           /* $chatBoat = ChatBoat::where([
-                'is_ready' => 1
-            ])->where(function($q) use($userId)
-            {
-                $q->where('accept_user_id', $userId)
-                ->orWhere('accept_other_user_id', $userId);
-            })
-            ->get();*/
-
-            $senderIds      = $chatBoat->pluck('user_id')->toArray();
-            $receiverIds    = $chatBoat->pluck('other_user_id')->toArray();
-            $allowedUserIds = array_unique(array_merge($senderIds, $receiverIds));
-
-            /**
-             *   Chat Boat
-             * where(function($q) use($allowedUserIds)
-            {
-                $q->whereIn('user_id', $allowedUserIds)->whereIn('other_user_id', $allowedUserIds);
-            })
-             *
-             */
-            $messages = $this->model
-            /*whereIn('user_id', $allowedUserIds)
-            ->orWhereIn('other_user_id', $allowedUserIds)*/
-            ->with([
-                'user',
-                'other_user'
-            ])
-            ->orderBy('id', 'desc')
-            ->get();
-
-            $response   = [];
-            $userIds    = [];
-            $inPair     = [];
-            $outPair    = [];
-            $messageIds = [];
-
-            foreach($messages as $message)
-            {
-                $checkInPair = $message->user_id . ','. $message->other_user_id;
-                $checkOutPair = $message->other_user_id . ','. $message->user_id;
-
-                if(!in_array($checkInPair, $inPair) && !in_array($checkOutPair, $outPair) && !in_array($checkOutPair, $inPair) && !in_array($checkInPair, $outPair) )
-                {
-                    $messageIds[]   = $message->id;
-                    $response[]     = $message;
-                    $inPair[]       = $checkInPair;
-                    $outPair[]      = $checkOutPair;
-                }
-            }
-            
-            AdminMessages::whereIn('message_id', $messageIds)->delete();
-            
-            return $response;
-        }
-        
-        return false;
-    }
-
-    /**
-     * Get All
-     *
-     * @param string $orderBy
-     * @param string $sort
-     * @return mixed
-     */
-    public function getAllChat($userId = null, $otherUserId = null)
-    {
-        if($userId && $otherUserId)
-        {
-            return $this->model->where([
-                'user_id'   => $userId,
-                'other_user_id'    => $otherUserId
-            ])->orWhere([
-                'other_user_id'   => $userId,
-                'user_id'    => $otherUserId
-            ])
-            ->with([
-                'user',
-                'other_user'
-            ])
-            ->get();
-        }
-
-        return false;
-    }
-    
 }
