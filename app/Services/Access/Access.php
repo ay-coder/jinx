@@ -451,7 +451,7 @@ class Access
             ])->count();
 
             $adminUnreadCount = AdminMessages::where([
-                'other_user_id' => $user_id,
+                'other_user_id' => $userId,
                 'user_id'       => $otherUserId
             ])->count();
 
@@ -517,6 +517,8 @@ class Access
 
         if(isset($trackMessages) && count($trackMessages))
         {
+            $deleteTrackMsgIds = [];
+
             foreach($trackMessages as $trackMessage)
             {
                 if($trackMessage->is_admin == 1)
@@ -578,7 +580,7 @@ class Access
                     $this->addNotification($notificationData2);
                     $this->sentPushNotification($userOne, $notificationData2);
 
-                    $trackMessages->delete();
+                    $deleteTrackMsgIds[] = $trackMessage->id;
                     continue;
                 }
 
@@ -614,7 +616,7 @@ class Access
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
 
-                    $trackMessages->delete();
+                    $deleteTrackMsgIds[] = $trackMessage->id;
                     continue;
                 }
 
@@ -650,9 +652,14 @@ class Access
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
 
-                    $trackMessages->delete();
+                    $deleteTrackMsgIds[] = $trackMessage->id;
                     continue;
                 }
+            }
+
+            if(count($deleteTrackMsgIds))
+            {
+                TrackMessages::whereIn('id', $deleteTrackMsgIds)->delete();
             }
         }
     }
