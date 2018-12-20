@@ -578,6 +578,7 @@ class Access
                     $this->addNotification($notificationData2);
                     $this->sentPushNotification($userOne, $notificationData2);
 
+                    $trackMessages->delete();
                     continue;
                 }
 
@@ -613,6 +614,7 @@ class Access
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
 
+                    $trackMessages->delete();
                     continue;
                 }
 
@@ -648,6 +650,7 @@ class Access
                     $this->addNotification($notificationData);
                     $this->sentPushNotification($userTwo, $notificationData);
 
+                    $trackMessages->delete();
                     continue;
                 }
             }
