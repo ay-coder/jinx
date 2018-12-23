@@ -152,11 +152,6 @@ class APIUserInterestsController extends BaseApiController
                         'message'       => "Let's Talk "
                     ]);
 
-                    HideMessages::create([
-                        'user_id'       => $userInfo->id,
-                        'message_id'    =>  $message->id
-                    ]);
-
                     AdminMessages::create([
                         'user_id'       => $userInfo->id,
                         'other_user_id' => $request->get('interested_user_id'),
