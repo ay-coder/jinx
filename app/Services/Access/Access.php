@@ -18,6 +18,7 @@ use App\Models\TrackMessages\TrackMessages;
 use App\Models\Access\User\User;
 use App\Models\Images\Images;
 use App\Models\AdminMessages\AdminMessages;
+use App\Models\HideMessages\HideMessages;
 
 /**
  * Class Access.
@@ -535,6 +536,11 @@ class Access
                         'message'       => $text
                     ]);
 
+                    HideMessages::create([
+                        'user_id'       => $userOne->id,
+                        'message_id'    => $messageOne->id
+                    ]);
+
                     AdminMessages::create([
                         'user_id'       => $userOne->id,
                         'other_user_id' => $userTwo->id,
@@ -560,6 +566,12 @@ class Access
                         'is_admin'      => 1,
                         'other_user_id' => $userOne->id,
                         'message'       => $text2
+                    ]);
+
+
+                    HideMessages::create([
+                        'user_id'       => $userTwo->id,
+                        'message_id'    => $messageTwo->id
                     ]);
 
                     AdminMessages::create([
@@ -598,6 +610,11 @@ class Access
                         'message'       => $text
                     ]);
 
+                    HideMessages::create([
+                        'user_id'       => $userOne->id,
+                        'message_id'    => $message->id
+                    ]);
+
                     AdminMessages::create([
                         'user_id'       => $userOne->id,
                         'other_user_id' => $userTwo->id,
@@ -632,6 +649,11 @@ class Access
                         'is_admin'      => 1,
                         'other_user_id' => $userTwo->id,
                         'message'       => $text
+                    ]);
+
+                    HideMessages::create([
+                        'user_id'       => $userOne->id,
+                        'message_id'    => $message->id
                     ]);
 
                     AdminMessages::create([
@@ -695,6 +717,22 @@ class Access
             $mutualInt = UserInterests::whereIn('user_id', $myIntIds)->where('interested_user_id', $userId)->get();
 
             return $mutualInt->pluck('user_id')->toArray();
+        }
+
+        return [];
+    }
+
+    /**
+     * Get User Hidden MessageIds
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function getUserHiddenMessageIds($userId = null)
+    {
+        if($userId)
+        {
+            return HideMessages::where('user_id', $userId)->pluck('message_id')->toArray();
         }
 
         return [];

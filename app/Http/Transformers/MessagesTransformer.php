@@ -30,11 +30,18 @@ class MessagesTransformer extends Transformer
 
         if($items)   
         {
-            $currentUserId = access()->user()->id;
+            $currentUserId      = access()->user()->id;
+            $getUserSkippIds    = access()->getUserHiddenMessageIds($currentUserId);
+
             foreach($items as $item)
             {
                 $unreadCount = 0;
 
+                if(in_array($item->id, $getUserSkippIds ))
+                {
+                    continue;
+                }
+                
                 if($currentUserId == $item->user_id)
                 {
                     $unreadCount = access()->getUnreadMessageCount($item->user_id, $item->other_user_id);

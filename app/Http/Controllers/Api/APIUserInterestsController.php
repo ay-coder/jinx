@@ -11,6 +11,7 @@ use App\Models\Messages\Messages;
 use App\Models\Access\User\User;
 use App\Models\TrackMessages\TrackMessages;
 use App\Models\AdminMessages\AdminMessages;
+use App\Models\HideMessages\HideMessages;
 
 class APIUserInterestsController extends BaseApiController
 {
@@ -149,6 +150,11 @@ class APIUserInterestsController extends BaseApiController
                         'is_admin'      => 1,
                         'other_user_id' => $request->get('interested_user_id'),
                         'message'       => "Let's Talk "
+                    ]);
+
+                    HideMessages::create([
+                        'user_id'       => $userInfo->id,
+                        'message_id'    =>  $message->id
                     ]);
 
                     AdminMessages::create([
