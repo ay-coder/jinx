@@ -355,11 +355,11 @@ class EloquentMessagesRepository extends DbRepository
                 $q->where('accept_user_id', $userId)
                 ->orWhere('accept_other_user_id', $userId);
             })
-            ->get();*/
+            ->get();
 
             $senderIds      = $chatBoat->pluck('user_id')->toArray();
             $receiverIds    = $chatBoat->pluck('other_user_id')->toArray();
-            $allowedUserIds = array_unique(array_merge($senderIds, $receiverIds));
+            $allowedUserIds = array_unique(array_merge($senderIds, $receiverIds));*/
 
             /**
              *   Chat Boat
