@@ -445,18 +445,25 @@ class Access
     {
         if($userId && $otherUserId)
         {
-            $messageUnreadCount = Messages::where([
+            $messageUnread = Messages::where([
                 'is_read'       => 0,
                 'other_user_id' => $otherUserId,
                 'user_id'       => $userId
-            ])->count();
+            ])->get();
 
-            $adminUnreadCount = AdminMessages::where([
+            $adminUnread = AdminMessages::where([
                 'other_user_id' => $userId,
                 'user_id'       => $otherUserId
-            ])->count();
+            ])->get();
 
-            return $adminUnreadCount + $messageUnreadCount;
+            $unreadMsgIds   = $messageUnread->pluck('message_id')->toArray();
+            $adminMsgIds    = $adminUnread->pluck('message_id')->toArray();
+            $allMsgIds      = array_unique(array_merge($unreadMsgIds, $adminMsgIds));
+
+            $myHideMessageCount = HideMessages::where('user_id', $otherUserId)->whereIn('message_id', $allMsgIds)->count();
+
+            $total = count($messageUnread) + count($adminUnread) - $myHideMessageCount;
+            return $total;
         }
 
         return 0;
